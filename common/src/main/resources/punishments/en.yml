@@ -1,0 +1,305 @@
+# %check_name% - check name
+# %description% - check description
+# %vl% - violations
+# %verbose% - additional information
+# %player% - player name
+# [alert] - special command to send alerts
+# [webhook] - special command to send alerts to a Discord webhook
+# [proxy] - special command to notify other servers connected to your proxy (BungeeCord/Velocity)
+
+Punishments:
+    Simulation:
+        # After how many seconds should violations be removed?
+        remove-violations-after: 300
+
+        # This section will match all checks with the specified name.
+        # To exclude a check that would otherwise be matched, put an exclamation mark before the name.
+        # Example: !BadPacketsN
+        checks:
+            - "Simulation"
+            - "GroundSpoof"
+            - "Timer"
+            - "TimerLimit"
+            - "NoFall"
+            - "Flight"
+            - "!FlightB"
+
+        # Threshold:Interval command
+        #
+        # Example: kick the player with the message "invalid movement!"
+        # after 100 violations, without an interval.
+        #
+        # Commands:
+        # - "100:0 kick %player% invalid movement!"
+        #   0 means execute exactly once.
+        #
+        # - "100:50 say %player% is cheating!"
+        #   Executes when the player reaches 100 flags,
+        #   and then every 50 flags after 100.
+        commands:
+            - "10:10 [alert]"
+            - "20:20 [log]"
+            - "20:10 [webhook]"
+            - "20:10 [proxy]"
+
+    AirSutck:
+        remove-violations-after: 60
+        checks:
+            - "AirStuck"
+        commands:
+            - "1:1 [alert]"
+            - "2:5 [log]"
+            - "5:5 [webhook]"
+            - "5:5 [proxy]"
+
+    Knockback:
+        remove-violations-after: 300
+        checks:
+            - "Knockback"
+            - "Explosion"
+        commands:
+            - "5:5 [alert]"
+            - "5:5 [log]"
+            - "20:20 [webhook]"
+            - "20:20 [proxy]"
+
+    Post:
+        remove-violations-after: 300
+        checks:
+            - "Post"
+        commands:
+            - "20:20 [alert]"
+            - "20:20 [log]"
+            - "40:40 [webhook]"
+            - "40:40 [proxy]"
+
+    BadPackets:
+        remove-violations-after: 300
+        checks:
+            - "BadPackets"
+            - "!BadPacketsA"
+            - "!BadPacketsL"
+            - "PacketOrder"
+            - "Crash"
+            - "Exploit"
+        commands:
+#            - "100:100 kick %player% %prefix% &fYou are sending suspicious packets"
+            - "10:5 [alert]"
+            - "20:20 [log]"
+            - "40:40 [webhook]"
+            - "40:40 [proxy]"
+
+    BadPackets-A: # ClickPearl / AutoTool (NoView) / other
+        remove-violations-after: 300
+        checks:
+            - "BadPacketsA"
+        commands:
+#            - "50:50 kick %player% %prefix% &fYou are sending suspicious packets"
+            - "5:5 [alert]"
+            - "10:10 [log]"
+            - "20:20 [webhook]"
+            - "20:20 [proxy]"
+
+    BadPackets-L: # Nursultan Parasha | NoSlow SpookyT-Anarchy / SpamItem Bots / Exploits
+        remove-violations-after: 300
+        checks:
+            - "BadPacketsL"
+        commands:
+#            - "50:50 kick %player% %prefix% &fYou are sending suspicious packets"
+            - "10:5 [alert]"
+            - "20:20 [log]"
+            - "40:40 [webhook]"
+            - "40:40 [proxy]"
+
+    Inventory:
+        remove-violations-after: 300
+        checks:
+            - "Inventory"
+            - "!InventoryI"
+            - "!InventoryX"
+            - "!InventoryH"
+        commands:
+            - "2:2 grim setback %player% 1000"
+            - "2:5 [alert]"
+            - "5:10 [log]"
+            - "10:5 [webhook]"
+            - "10:5 [proxy]"
+
+    Inventory-I: # maybe itemscroller
+        remove-violations-after: 150
+        checks:
+            - "InventoryI"
+        commands:
+            - "2:2 grim setback %player% 1000"
+            - "2:5 [alert]"
+            - "5:10 [log]"
+            - "10:5 [webhook]"
+            - "10:5 [proxy]"
+
+    Inventory-H: # fast inventory close / GuiMove Nursultan/other, AutoSwap/other
+        remove-violations-after: 150
+        checks:
+            - "InventoryH"
+        commands:
+#            - "5:5 kick %player% %prefix%&fYou are sending a suspicious packet sequence."
+            - "2:2 grim setback %player% 1000"
+            - "2:5 [alert]"
+            - "5:10 [log]"
+            - "10:5 [webhook]"
+            - "10:5 [proxy]"
+
+    Inventory-X: # maybe itemscroller
+        remove-violations-after: 300
+        checks:
+            - "InventoryX"
+        commands:
+            - "2:5 [alert]"
+            - "5:10 [log]"
+            - "10:5 [webhook]"
+            - "10:5 [proxy]"
+
+    Reach:
+        remove-violations-after: 300
+        checks:
+            - "Reach"
+        commands:
+            - "1:1 [alert]"
+            - "1:1 [log]"
+            - "1:1 [webhook]"
+            - "1:1 [proxy]"
+
+    Hitboxes:
+        remove-violations-after: 300
+        checks:
+            - "Hitboxes"
+        commands:
+            - "5:3 [alert]"
+            - "5:3 [log]"
+            - "5:3 [webhook]"
+            - "5:3 [proxy]"
+
+    WallHit:
+        remove-violations-after: 300
+        checks:
+            - "WallHit"
+        commands:
+            - "10:5 [alert]"
+            - "10:5 [webhook]"
+            - "10:5 [proxy]"
+            - "10:5 [log]"
+
+    EntityPierce:
+        remove-violations-after: 300
+        checks:
+            - "EntityPierce"
+        commands:
+            - "15:10 [alert]"
+            - "15:10 [webhook]"
+            - "15:10 [proxy]"
+            - "15:10 [log]"
+
+    Aim_Test:
+        remove-violations-after: 120
+        checks:
+            - "AimSnapA" # Old check (new replacement – AimSnapLook)
+        commands:
+            - "2:3 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    Aim:
+        remove-violations-after: 150
+        checks:
+            - "Aim"
+            - "!AimSnapA" # Old check (new replacement – AimSnapLook)
+        commands:
+#            - "20:20 kick %player% %prefix%&fYou are sending a suspicious rotation sequence."
+            - "2:2 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    Npc:
+        remove-violations-after: 30
+        checks:
+            - "NpcAura"
+        commands:
+            - "10:10 kick %player% %prefix%&fYou are sending a suspicious attack sequence."
+            - "2:2 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    SprintR:
+        remove-violations-after: 150
+        checks:
+            - "SprintH"
+        commands:
+            - "5:5 kick %player% %prefix%&fYou are sending a suspicious packet sequence."
+            - "1:1 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    SprintR-I:
+        remove-violations-after: 150
+        checks:
+            - "SprintI"
+        commands:
+#            - "5:5 kick %player% %prefix%&fYou are sending a suspicious packet sequence."
+            - "1:1 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    Moving:
+        remove-violations-after: 300
+        checks:
+            - "Vehicle"
+            - "Baritone"
+            - "NoSlow"
+            - "Sprint"
+            - "!SprintH"
+            - "!SprintI"
+            - "FlightB"
+            - "ElytraJ"
+        commands:
+            - "10:5 [alert]"
+            - "10:5 [log]"
+            - "20:10 [webhook]"
+            - "20:10 [proxy]"
+
+    Misc:
+        remove-violations-after: 300
+        checks:
+            - "MultiActions"
+            - "Place"
+            - "Break"
+            - "TransactionOrder"
+            - "Elytra"
+            - "!ElytraJ"
+            - "Chat"
+        commands:
+            - "10:5 [alert]"
+            - "10:5 [log]"
+            - "20:10 [webhook]"
+            - "20:10 [proxy]"
+
+    Combat:
+        remove-violations-after: 300
+        checks:
+            - "Interact"
+        commands:
+            - "20:40 [alert]"
+            - "20:40 [log]"
+
+    # Starting from version 2.2.10, AutoClicker checks are not present.
+    # A placeholder is used instead. Grim will add AutoClicker checks in the future.
+    Autoclicker:
+        remove-violations-after: 300
+        checks:
+            - "Autoclicker"
+        commands:
+            - "20:40 [alert]"
+            - "20:40 [log]"

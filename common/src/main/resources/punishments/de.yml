@@ -1,0 +1,207 @@
+Punishments:
+    Simulation:
+        remove-violations-after: 300
+        checks:
+            - "Simulation"
+            - "!SimulationB"
+            - "GroundSpoof"
+            - "Timer"
+            - "TimerLimit"
+            - "NoFall"
+            - "Flight"
+            - "!FlightB"
+        commands:
+            - "10:10 [alert]"
+            - "20:20 [log]"
+            - "20:10 [webhook]"
+            - "20:10 [proxy]"
+
+    AirSutck:
+        remove-violations-after: 300
+        checks:
+            - "AirStuck"
+        commands:
+            - "1:1 [alert]"
+            - "2:5 [log]"
+            - "5:5 [webhook]"
+            - "5:5 [proxy]"
+
+    Knockback:
+        remove-violations-after: 300
+        checks:
+            - "Knockback"
+            - "Explosion"
+        commands:
+            - "5:5 [alert]"
+            - "5:5 [log]"
+            - "20:20 [webhook]"
+            - "20:20 [proxy]"
+
+    Post:
+        remove-violations-after: 300
+        checks:
+            - "Post"
+        commands:
+            - "20:20 [alert]"
+            - "20:20 [log]"
+            - "40:40 [webhook]"
+            - "40:40 [proxy]"
+
+    BadPackets:
+        remove-violations-after: 300
+        checks:
+            - "BadPackets"
+            - "PacketOrder"
+            - "Crash"
+            - "Exploit"
+        commands:
+            - "100:100 kick %player% %prefix% &fStai inviando pacchetti sospetti"
+            - "10:5 [alert]"
+            - "20:20 [log]"
+            - "40:40 [webhook]"
+            - "40:40 [proxy]"
+
+    Inventory:
+        remove-violations-after: 300
+        checks:
+            - "Inventory"
+        commands:
+            - "2:2 grim setback %player% 1000"
+            - "2:5 [alert]"
+            - "5:10 [log]"
+            - "10:5 [webhook]"
+            - "10:5 [proxy]"
+
+    Reach:
+        remove-violations-after: 300
+        checks:
+            - "Reach"
+        commands:
+            - "1:1 [alert]"
+            - "1:1 [log]"
+            - "1:1 [webhook]"
+            - "1:1 [proxy]"
+
+    Hitboxes:
+        remove-violations-after: 300
+        checks:
+            - "Hitboxes"
+        commands:
+            - "5:3 [alert]"
+            - "5:3 [log]"
+            - "5:3 [webhook]"
+            - "5:3 [proxy]"
+
+    WallHit:
+        remove-violations-after: 300
+        checks:
+            - "WallHit"
+        commands:
+            - "10:5 [alert]"
+            - "10:5 [webhook]"
+            - "10:5 [proxy]"
+            - "10:5 [log]"
+
+    EntityPierce:
+        remove-violations-after: 300
+        checks:
+            - "EntityPierce"
+        commands:
+            - "15:10 [alert]"
+            - "15:10 [webhook]"
+            - "15:10 [proxy]"
+            - "15:10 [log]"
+
+    Aim_Test:
+        remove-violations-after: 120
+        checks:
+            - "AimSnapA"
+        commands:
+            - "2:3 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    Aim:
+        remove-violations-after: 150
+        checks:
+            - "Aim"
+            - "!AimSnapA"
+        commands:
+            - "15:5 kick %player% %prefix%&fStai inviando una sequenza di rotazioni sospetta. &8(Aim Analytics)"
+            - "2:2 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    Npc:
+        remove-violations-after: 30
+        checks:
+            - "NpcAura"
+        commands:
+            - "10:5 kick %player% %prefix%&fStai inviando una sequenza di rotazioni sospetta. &8(Npc)"
+            - "2:2 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    SprintR:
+        remove-violations-after: 150
+        checks:
+            - "SprintH"
+            - "SprintI"
+        commands:
+            - "5:1 kick %player% %prefix%&fStai inviando una sequenza di pacchetti sospetta. &8(Sprint)"
+            - "1:1 [alert]"
+            - "5:2 [log]"
+            - "10:2 [webhook]"
+            - "10:2 [proxy]"
+
+    Moving:
+        remove-violations-after: 300
+        checks:
+            - "Vehicle"
+            - "Baritone"
+            - "NoSlow"
+            - "Sprint"
+            - "!SprintH"
+            - "!SprintI"
+            - "FlightB"
+            - "ElytraJ"
+        commands:
+            - "10:5 [alert]"
+            - "10:5 [log]"
+            - "20:10 [webhook]"
+            - "20:10 [proxy]"
+
+    Misc:
+        remove-violations-after: 300
+        checks:
+            - "MultiActions"
+            - "Place"
+            - "Break"
+            - "TransactionOrder"
+            - "Elytra"
+            - "!ElytraJ"
+            - "Chat"
+        commands:
+            - "10:5 [alert]"
+            - "10:5 [log]"
+            - "20:10 [webhook]"
+            - "20:10 [proxy]"
+
+    Combat:
+        remove-violations-after: 300
+        checks:
+            - "Interact"
+        commands:
+            - "20:40 [alert]"
+            - "20:40 [log]"
+
+    Autoclicker:
+        remove-violations-after: 300
+        checks:
+            - "Autoclicker"
+        commands:
+            - "20:40 [alert]"
+            - "20:40 [log]"

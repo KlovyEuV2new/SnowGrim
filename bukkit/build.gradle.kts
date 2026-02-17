@@ -1,0 +1,206 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission
+import versioning.BuildConfig
+
+plugins {
+    `maven-publish`
+    grim.`base-conventions`
+    grim.`shadow-conventions`
+    id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
+    id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
+}
+
+repositories {
+    if (BuildConfig.mavenLocalOverride) {
+        mavenLocal()
+    }
+
+    // For paper-api
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "papermc"
+                url = uri("https://repo.papermc.io/repository/maven-public/")
+            }
+        }
+        filter {
+            includeGroup("io.papermc.paper")
+            includeGroup("net.md-5")
+        }
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven("https://libraries.minecraft.net") { // Brigadier
+                mavenContent { releasesOnly() }
+            }
+        }
+        filter {
+            includeModule("com.mojang", "brigadier")
+        }
+    }
+
+    // For placeholderapi
+    exclusiveContent {
+        forRepository {
+            maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        }
+        filter {
+            includeGroup("me.clip")
+        }
+    }
+
+    // For GrimAPI and PacketEvents (transitive from :common, direct in :bukkit)
+    exclusiveContent {
+        forRepository {
+            maven("https://repo.grim.ac/snapshots")
+        }
+        filter {
+            includeGroup("ac.grim.grimac")
+            includeGroup("com.github.retrooper")
+        }
+    }
+
+    // For Configuralize (transitive from :common)
+    exclusiveContent {
+        forRepository {
+            maven("https://nexus.scarsz.me/content/repositories/releases") {
+                mavenContent { releasesOnly() }
+            }
+        }
+        filter {
+            includeGroup("github.scarsz")
+        }
+    }
+
+    // Maven Central Fallback
+    mavenCentral()
+}
+
+
+dependencies {
+    compileOnly(libs.paper.api)
+    compileOnly(libs.placeholderapi)
+
+    if (BuildConfig.shadePE) {
+        implementation(libs.packetevents.spigot)
+    } else {
+        compileOnly(libs.packetevents.spigot)
+    }
+    implementation(libs.cloud.paper)
+    implementation(libs.adventure.platform.bukkit)
+
+    implementation(project(":common"))
+    shadow(project(":common"))
+}
+
+bukkit {
+    name = "SnowGrim"
+    author = "SnowGrim"
+    main = "ac.grim.grimac.platform.bukkit.GrimACBukkitLoaderPlugin"
+    website = "https://grim.ac/"
+    apiVersion = "1.13"
+    foliaSupported = true
+
+    if (!BuildConfig.shadePE) {
+        depend = listOf("packetevents")
+    }
+
+    softDepend = listOf(
+        "ProtocolLib",
+        "ProtocolSupport",
+        "Essentials",
+        "ViaVersion",
+        "ViaBackwards",
+        "ViaRewind",
+        "Geyser-Spigot",
+        "floodgate",
+        "FastLogin",
+        "PlaceholderAPI",
+    )
+
+    permissions {
+        register("snowgrim.alerts") {
+            description = "Receive alerts for violations"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.alerts.enable-on-join") {
+            description = "Enable alerts on join"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.performance") {
+            description = "Check performance metrics"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.profile") {
+            description = "Check user profile"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.brand") {
+            description = "Show client brands on join"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.brand.enable-on-join") {
+            description = "Enable showing client brands on join"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.sendalert") {
+            description = "Send cheater alert"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.nosetback") {
+            description = "Disable setback"
+            default = Permission.Default.FALSE
+        }
+
+        register("snowgrim.nomodifypacket") {
+            description = "Disable modifying packets"
+            default = Permission.Default.FALSE
+        }
+
+        register("snowgrim.exempt") {
+            description = "Exempt from all checks"
+            default = Permission.Default.FALSE
+        }
+
+        register("snowgrim.verbose") {
+            description = "Receive verbose alerts for violations"
+            default = Permission.Default.OP
+        }
+
+        register("snowgrim.verbose.enable-on-join") {
+            description =
+                "Enable verbose alerts on join"
+            default = Permission.Default.FALSE
+        }
+
+        register("snowgrim.list") {
+            description =
+                "Shows lists of specific data"
+            default = Permission.Default.FALSE
+        }
+
+    }
+}
+
+publishing.publications.create<MavenPublication>("maven") {
+    artifact(tasks["shadowJar"])
+}
+
+tasks {
+    runServer {
+        minecraftVersion("1.21.10")
+    }
+
+    shadowJar {
+        manifest {
+            attributes["paperweight-mappings-namespace"] = "mojang"
+        }
+    }
+}
