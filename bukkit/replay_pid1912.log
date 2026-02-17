@@ -17,7 +17,7 @@ instanceKlass  @bci jdk/javadoc/internal/doclets/formats/html/Table createTab (L
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000021e421c1000
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000021e421c0c00
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000021e421c0800
-# instanceKlass java/lang/invoke/LambdaForm$MH+0x0000021e421c0400
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x0000021e421c04000
 instanceKlass  @bci jdk/javadoc/internal/doclets/formats/html/Table createTab (Ljdk/javadoc/internal/doclets/formats/html/markup/HtmlId;Ljdk/javadoc/internal/doclets/formats/html/markup/HtmlStyle;ZLjdk/javadoc/internal/doclets/toolkit/Content;)Ljdk/javadoc/internal/doclets/formats/html/markup/HtmlTree; 126 <appendix> form names 12 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000021e421c0000
 instanceKlass  @bci jdk/javadoc/internal/doclets/formats/html/Table createTab (Ljdk/javadoc/internal/doclets/formats/html/markup/HtmlId;Ljdk/javadoc/internal/doclets/formats/html/markup/HtmlStyle;ZLjdk/javadoc/internal/doclets/toolkit/Content;)Ljdk/javadoc/internal/doclets/formats/html/markup/HtmlTree; 126 <appendix> argL1 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000021e421b9c00
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000021e421b9800
