@@ -47,11 +47,11 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
     public void onReload(ConfigManager config) {
         enabled = config.getBooleanElse(getConfigName() + ".enabled", true);
         sampleSize = config.getIntElse(getConfigName() + ".sample-size", 3);
-        accelerationMultiplier = config.getDoubleElse(getConfigName() + ".acceleration-multiplier", 7.5f);
-        slowdownMultiplier = config.getDoubleElse(getConfigName() + ".slowdown-multiplier", 0.25f);
-        closenessThreshold = config.getDoubleElse(getConfigName() + ".closeness-threshold", 0.5f);
-        minYaw = config.getDoubleElse(getConfigName() + ".min-yaw", 0.25f);
-        minPitch = config.getDoubleElse(getConfigName() + ".min-pitch", 0.25f);
+        accelerationMultiplier = config.getDoubleElse(getConfigName() + ".acceleration-multiplier", 7.5);
+        slowdownMultiplier = config.getDoubleElse(getConfigName() + ".slowdown-multiplier", 0.25);
+        closenessThreshold = config.getDoubleElse(getConfigName() + ".closeness-threshold", 0.5);
+        minYaw = config.getDoubleElse(getConfigName() + ".min-yaw", 0.25);
+        minPitch = config.getDoubleElse(getConfigName() + ".min-pitch", 0.25);
         rotationWindow = config.getIntElse(getConfigName() + ".rotation-window", 20);
         requiredSnaps = config.getIntElse(getConfigName() + ".required-snaps", 2);
         bufferDecay = config.getDoubleElse(getConfigName() + ".buffer-decay", 0.25);
@@ -63,45 +63,44 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
     @Override
     public void process(final RotationUpdate rotationUpdate) {
         if (!enabled) return;
-        if (!player.actionManager.hasAttackedSince(5000) || player.packetStateData.lastPacketWasTeleport || player.vehicleData.wasVehicleSwitch || player.isCinematicRotation()) {
+
+        if (!player.actionManager.hasAttackedSince(5000) ||
+                player.packetStateData.lastPacketWasTeleport ||
+                player.vehicleData.wasVehicleSwitch ||
+                player.isCinematicRotation()) {
+
             lastYawDeltas.clear();
             lastPitchDeltas.clear();
             snapHistory.clear();
             snapDataHistory.clear();
             buffer = 0;
-            lastYaw = 0;
-            lastPitch = 0;
+            lastYaw = rotationUpdate.getTo().yaw();
+            lastPitch = rotationUpdate.getTo().pitch();
             return;
         }
 
         double currentYaw = rotationUpdate.getTo().yaw();
         double currentPitch = rotationUpdate.getTo().pitch();
 
-        boolean isDuplicateYaw = Math.abs(currentYaw - lastYaw) < duplicateThreshold;
-        boolean isDuplicatePitch = Math.abs(currentPitch - lastPitch) < duplicateThreshold;
+        double deltaYaw = Math.abs(wrapTo180(currentYaw - lastYaw));
+        double deltaPitch = Math.abs(currentPitch - lastPitch);
 
-        if (isDuplicateYaw && isDuplicatePitch) {
-            return;
-        }
+        boolean isDuplicateYaw = deltaYaw < duplicateThreshold;
+        boolean isDuplicatePitch = deltaPitch < duplicateThreshold;
+
+        if (isDuplicateYaw && isDuplicatePitch) return;
 
         lastYaw = currentYaw;
         lastPitch = currentPitch;
 
-        double deltaYaw = Math.abs(rotationUpdate.getDeltaXRot());
-        double deltaPitch = Math.abs(rotationUpdate.getDeltaYRot());
-
         if (!isDuplicateYaw) {
             lastYawDeltas.add(deltaYaw);
-            if (lastYawDeltas.size() > sampleSize) {
-                lastYawDeltas.removeFirst();
-            }
+            if (lastYawDeltas.size() > sampleSize) lastYawDeltas.removeFirst();
         }
 
         if (!isDuplicatePitch) {
             lastPitchDeltas.add(deltaPitch);
-            if (lastPitchDeltas.size() > sampleSize) {
-                lastPitchDeltas.removeFirst();
-            }
+            if (lastPitchDeltas.size() > sampleSize) lastPitchDeltas.removeFirst();
         }
 
         boolean snapDetected = false;
@@ -109,14 +108,7 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
         String snapAxis = "";
 
         if (lastYawDeltas.size() == sampleSize) {
-            boolean allAboveMin = true;
-            for (double delta : lastYawDeltas) {
-                if (delta <= minYaw) {
-                    allAboveMin = false;
-                    break;
-                }
-            }
-
+            boolean allAboveMin = lastYawDeltas.stream().allMatch(d -> d > minYaw);
             if (allAboveMin) {
                 Result result = checkPattern(lastYawDeltas);
                 if (result.isFlagged()) {
@@ -128,14 +120,7 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
         }
 
         if (!snapDetected && lastPitchDeltas.size() == sampleSize) {
-            boolean allAboveMin = true;
-            for (double delta : lastPitchDeltas) {
-                if (delta <= minPitch) {
-                    allAboveMin = false;
-                    break;
-                }
-            }
-
+            boolean allAboveMin = lastPitchDeltas.stream().allMatch(d -> d > minPitch);
             if (allAboveMin) {
                 Result result = checkPattern(lastPitchDeltas);
                 if (result.isFlagged()) {
@@ -147,34 +132,22 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
         }
 
         if (snapDetected && snapResult != null) {
-            double bufferIncrease = Math.min(
-                    (snapResult.accelerationRatio / accelerationMultiplier) * bufferMaxIncrease,
-                    bufferMaxIncrease
-            );
-            buffer = Math.min(buffer + bufferIncrease, getMaxBuffer());
+            double increase = Math.min((snapResult.accelerationRatio / accelerationMultiplier) * bufferMaxIncrease, bufferMaxIncrease);
+            buffer = Math.min(buffer + increase, getMaxBuffer());
             snapDataHistory.add(new SnapData(snapAxis, snapResult));
         } else {
             buffer = Math.max(0, buffer - bufferDecay);
         }
 
         snapHistory.add(snapDetected);
-
-        if (snapHistory.size() > rotationWindow) {
-            snapHistory.removeFirst();
-        }
-        if (snapDataHistory.size() > requiredSnaps * 2) {
-            snapDataHistory.removeFirst();
-        }
+        if (snapHistory.size() > rotationWindow) snapHistory.removeFirst();
+        if (snapDataHistory.size() > requiredSnaps * 2) snapDataHistory.removeFirst();
 
         if (snapHistory.size() == rotationWindow) {
-            int snapCount = 0;
-            for (boolean snap : snapHistory) {
-                if (snap) snapCount++;
-            }
-
+            long snapCount = snapHistory.stream().filter(b -> b).count();
             if (snapCount >= requiredSnaps && buffer >= maxBuffers) {
                 String avgStats = calculateAverageStats();
-                flagAndAlert(String.format("snaps=%d/%d in window=%d | buffer=%.2f | %s",
+                flagAndAlert(String.format("snaps=%d/%d window=%d | buffer=%.2f | %s",
                         snapCount, requiredSnaps, rotationWindow, buffer, avgStats));
                 buffer = 0;
             } else {
@@ -184,30 +157,18 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
     }
 
     private Result checkPattern(Deque<Double> deltas) {
-        Double[] deltaArray = deltas.toArray(new Double[0]);
-        double d1 = deltaArray[0];
-        double d2 = deltaArray[1];
-        double d3 = deltaArray[2];
-
+        Double[] arr = deltas.toArray(new Double[0]);
+        double d1 = arr[0], d2 = arr[1], d3 = arr[2];
         Result result = new Result(d1, d2, d3, false);
+        if (d1 <= 0 || d2 <= 0) return result;
 
-        if (d1 <= 0 || d2 <= 0) {
-            return result;
-        }
+        result.accelerationRatio = d2 / d1;
+        result.slowdownRatio = d3 / d2;
+        result.closenessRatio = Math.abs(d3 - d1) / d1;
 
-        double accelerationRatio = d2 / d1;
-        double slowdownRatio = d3 / d2;
-        double closenessRatio = Math.abs(d3 - d1) / d1;
-
-        result.accelerationRatio = accelerationRatio;
-        result.slowdownRatio = slowdownRatio;
-        result.closenessRatio = closenessRatio;
-
-        boolean accelerated = accelerationRatio > accelerationMultiplier;
-        boolean slowedBack = slowdownRatio < slowdownMultiplier;
-        boolean closeToOriginal = closenessRatio < closenessThreshold;
-
-        if (accelerated && slowedBack && closeToOriginal) {
+        if (result.accelerationRatio > accelerationMultiplier &&
+                result.slowdownRatio < slowdownMultiplier &&
+                result.closenessRatio < closenessThreshold) {
             result.setFlagged(true);
         }
 
@@ -215,46 +176,36 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
     }
 
     private String calculateAverageStats() {
-        if (snapDataHistory.isEmpty()) {
-            return "no data";
-        }
+        if (snapDataHistory.isEmpty()) return "no data";
 
         double avgD1 = 0, avgD2 = 0, avgD3 = 0;
-        double avgAccRatio = 0, avgSlowRatio = 0, avgCloseRatio = 0;
+        double avgAcc = 0, avgSlow = 0, avgClose = 0;
         int yawCount = 0, pitchCount = 0;
 
         for (SnapData data : snapDataHistory) {
             avgD1 += data.result.d1;
             avgD2 += data.result.d2;
             avgD3 += data.result.d3;
-            avgAccRatio += data.result.accelerationRatio;
-            avgSlowRatio += data.result.slowdownRatio;
-            avgCloseRatio += data.result.closenessRatio;
+            avgAcc += data.result.accelerationRatio;
+            avgSlow += data.result.slowdownRatio;
+            avgClose += data.result.closenessRatio;
 
-            if (data.axis.equals("yaw")) yawCount++;
+            if ("yaw".equals(data.axis)) yawCount++;
             else pitchCount++;
         }
 
         int size = snapDataHistory.size();
-        avgD1 /= size;
-        avgD2 /= size;
-        avgD3 /= size;
-        avgAccRatio /= size;
-        avgSlowRatio /= size;
-        avgCloseRatio /= size;
+        avgD1 /= size; avgD2 /= size; avgD3 /= size;
+        avgAcc /= size; avgSlow /= size; avgClose /= size;
 
         return String.format("avg: d1=%.3f d2=%.3f d3=%.3f | acc=%.2f slow=%.2f close=%.2f | yaw=%d pitch=%d",
-                avgD1, avgD2, avgD3, avgAccRatio, avgSlowRatio, avgCloseRatio, yawCount, pitchCount);
+                avgD1, avgD2, avgD3, avgAcc, avgSlow, avgClose, yawCount, pitchCount);
     }
 
     private static class SnapData {
         String axis;
         Result result;
-
-        public SnapData(String axis, Result result) {
-            this.axis = axis;
-            this.result = result;
-        }
+        public SnapData(String axis, Result result) { this.axis = axis; this.result = result; }
     }
 
     private static class Result {
@@ -262,15 +213,16 @@ public class AimSnapA extends Check implements RotationCheck, PacketCheck {
         double accelerationRatio;
         double slowdownRatio;
         double closenessRatio;
-        @Setter
-        @Getter
-        private boolean flagged;
-
+        @Setter @Getter private boolean flagged;
         public Result(double d1, double d2, double d3, boolean flagged) {
-            this.d1 = d1;
-            this.d2 = d2;
-            this.d3 = d3;
-            this.flagged = flagged;
+            this.d1 = d1; this.d2 = d2; this.d3 = d3; this.flagged = flagged;
         }
+    }
+
+    private double wrapTo180(double value) {
+        value %= 360.0;
+        if (value >= 180.0) value -= 360.0;
+        if (value < -180.0) value += 360.0;
+        return value;
     }
 }

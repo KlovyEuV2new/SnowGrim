@@ -8,9 +8,11 @@ import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.checks.debug.HitboxDebugHandler;
 import ac.grim.grimac.checks.impl.aim.*;
 import ac.grim.grimac.checks.impl.aim.aimassist.*;
+import ac.grim.grimac.checks.impl.aim.heuristic.AimHeuristicA;
 import ac.grim.grimac.checks.impl.aim.snap.AimSnapA;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.aim.snap.AimSnapLook;
+import ac.grim.grimac.checks.impl.aim.states.*;
 import ac.grim.grimac.checks.impl.airstuck.AirStuckA;
 import ac.grim.grimac.checks.impl.aura.AuraA;
 import ac.grim.grimac.checks.impl.aura.AuraB;
@@ -198,7 +200,18 @@ public class CheckManager {
                 .put(AimL.class,new AimL(player))
                 .put(AimK.class,new AimK(player))
                 .put(AimU.class,new AimU(player))
+                .put(AimV.class,new AimV(player))
+                .put(AimW.class,new AimW(player))
                 .put(AimS.class,new AimS(player))
+                .put(AimX.class,new AimX(player))
+                .put(AimY.class,new AimY(player))
+                .put(AimStaticA.class,new AimStaticA(player))
+                .put(AimStaticB.class,new AimStaticB(player))
+                .put(AimStaticC.class,new AimStaticC(player))
+                .put(AimStaticD.class,new AimStaticD(player))
+                .put(AimRepeatA.class,new AimRepeatA(player))
+                .put(AimRepeatB.class,new AimRepeatB(player))
+                .put(AimHeuristicA.class,new AimHeuristicA(player))
                 .put(AimAssistA.class,new AimAssistA(player))
                 .put(AimAssistB.class,new AimAssistB(player))
                 .put(AimAssistC.class,new AimAssistC(player))
