@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 
-@CheckData(name = "AimHeuristicA", experimental = true, maxBuffer = 4)
-public class AimHeuristicA extends Check implements RotationCheck {
+@CheckData(name = "AimHeuristicC", experimental = true, maxBuffer = 4)
+public class AimHeuristicC extends Check implements RotationCheck {
 
     private double buffer;
     private float lastDeltaYaw;
@@ -20,7 +20,7 @@ public class AimHeuristicA extends Check implements RotationCheck {
 
     private static final DecimalFormat SCI_FORMAT = new DecimalFormat("0.#####E0");
 
-    public AimHeuristicA(@NotNull GrimPlayer player) {
+    public AimHeuristicC(@NotNull GrimPlayer player) {
         super(player);
     }
 
@@ -45,9 +45,11 @@ public class AimHeuristicA extends Check implements RotationCheck {
         double accelerationYaw = Math.abs(deltaYaw - lastDeltaYaw);
         double accelerationPitch = Math.abs(deltaPitch - lastDeltaPitch);
 
-        boolean invalidPattern =
-                (accelerationYaw == lastAccelerationYaw && accelerationYaw > 0.001) ||
-                        (accelerationPitch == lastAccelerationPitch && accelerationPitch > 0.001);
+        boolean invalidPattern = (lastDeltaPitch > 0.01 && lastDeltaYaw > 0.01
+                && (lastDeltaPitch == deltaYaw || lastDeltaYaw == deltaPitch))
+                || (lastAccelerationPitch > 0.01 && lastAccelerationYaw > 0.01
+                && (lastAccelerationPitch == accelerationYaw || lastAccelerationYaw == accelerationPitch)
+        );
 
         if (player.isCinematicRotation()) return;
         if (invalidPattern) {

@@ -62,6 +62,7 @@ import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.player.*;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.dimension.DimensionType;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
@@ -359,6 +360,17 @@ public class GrimPlayer implements GrimUser {
 //            for (String string : list) sendMessage(string);
 //        });
     }
+    public boolean isInWeb() {
+        SimpleCollisionBox box = this.boundingBox.copy().expand(-1.0E-4);
+
+        return Collisions.hasMaterial(this, box, pair -> {
+            var block = compensatedWorld.getBlock(pair.second().toVector3i());
+            if (block == null) return false;
+            return block.getType() == StateTypes.COBWEB;
+        });
+    }
+
+
 
     public double deltaXZ() {
         return GrimMath.distanceXZ(lastX,x,lastZ,z);

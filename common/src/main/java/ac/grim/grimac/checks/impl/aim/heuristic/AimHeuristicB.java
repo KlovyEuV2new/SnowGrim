@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 
-@CheckData(name = "AimHeuristicA", experimental = true, maxBuffer = 4)
-public class AimHeuristicA extends Check implements RotationCheck {
+@CheckData(name = "AimHeuristicB", experimental = true, maxBuffer = 4)
+public class AimHeuristicB extends Check implements RotationCheck {
 
     private double buffer;
     private float lastDeltaYaw;
@@ -20,7 +20,7 @@ public class AimHeuristicA extends Check implements RotationCheck {
 
     private static final DecimalFormat SCI_FORMAT = new DecimalFormat("0.#####E0");
 
-    public AimHeuristicA(@NotNull GrimPlayer player) {
+    public AimHeuristicB(@NotNull GrimPlayer player) {
         super(player);
     }
 
@@ -45,17 +45,17 @@ public class AimHeuristicA extends Check implements RotationCheck {
         double accelerationYaw = Math.abs(deltaYaw - lastDeltaYaw);
         double accelerationPitch = Math.abs(deltaPitch - lastDeltaPitch);
 
-        boolean invalidPattern =
-                (accelerationYaw == lastAccelerationYaw && accelerationYaw > 0.001) ||
-                        (accelerationPitch == lastAccelerationPitch && accelerationPitch > 0.001);
+        boolean lowVariance =
+                (Math.abs(deltaYaw - lastDeltaYaw) < 1E-7 && deltaYaw > 0.01) &&
+                        (Math.abs(deltaPitch - lastDeltaPitch) < 1E-7 && deltaPitch > 0.01);
 
         if (player.isCinematicRotation()) return;
-        if (invalidPattern) {
+        if (lowVariance) {
             if (++buffer > getMaxBuffer()) {
                 flagAndAlert(String.format(
                         "dy=%s dp=%s ay=%s ap=%s b=%.1f",
-                        SCI_FORMAT.format(deltaYaw),
-                        SCI_FORMAT.format(deltaPitch),
+                        SCI_FORMAT.format(Math.abs(deltaYaw - lastDeltaYaw)),
+                        SCI_FORMAT.format(Math.abs(deltaPitch - lastDeltaPitch)),
                         SCI_FORMAT.format(accelerationYaw),
                         SCI_FORMAT.format(accelerationPitch),
                         buffer

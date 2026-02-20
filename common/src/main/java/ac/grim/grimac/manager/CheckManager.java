@@ -9,6 +9,8 @@ import ac.grim.grimac.checks.debug.HitboxDebugHandler;
 import ac.grim.grimac.checks.impl.aim.*;
 import ac.grim.grimac.checks.impl.aim.aimassist.*;
 import ac.grim.grimac.checks.impl.aim.heuristic.AimHeuristicA;
+import ac.grim.grimac.checks.impl.aim.heuristic.AimHeuristicB;
+import ac.grim.grimac.checks.impl.aim.heuristic.AimHeuristicC;
 import ac.grim.grimac.checks.impl.aim.snap.AimSnapA;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.aim.snap.AimSnapLook;
@@ -94,6 +96,7 @@ public class CheckManager {
         packetChecks = new ImmutableClassToInstanceMap.Builder<PacketCheck>()
                 .put(PacketOrderProcessor.class, player.packetOrderProcessor)
                 .put(Reach.class, new Reach(player))
+                .put(WebOffset.class, new WebOffset(player))
                 .put(PacketEntityReplication.class, new PacketEntityReplication(player))
                 .put(PacketChangeGameState.class, new PacketChangeGameState(player))
                 .put(CompensatedInventory.class, player.inventory)
@@ -212,6 +215,8 @@ public class CheckManager {
                 .put(AimRepeatA.class,new AimRepeatA(player))
                 .put(AimRepeatB.class,new AimRepeatB(player))
                 .put(AimHeuristicA.class,new AimHeuristicA(player))
+                .put(AimHeuristicB.class,new AimHeuristicB(player))
+                .put(AimHeuristicC.class,new AimHeuristicC(player))
                 .put(AimAssistA.class,new AimAssistA(player))
                 .put(AimAssistB.class,new AimAssistB(player))
                 .put(AimAssistC.class,new AimAssistC(player))
@@ -252,6 +257,7 @@ public class CheckManager {
                 .put(NoSlow.class, new NoSlow(player))
                 //.put(SimulationJump.class, new SimulationJump(player))
                 .put(ElytraOffset.class, new ElytraOffset(player))
+                .put(ShulkerOffset.class, new ShulkerOffset(player))
                 //.put(FlyingOffset.class,new FlyingOffset(player))
                 .put(ElytraN.class,new ElytraN(player))
 //                .put(SimulationB.class, new SimulationB(player))

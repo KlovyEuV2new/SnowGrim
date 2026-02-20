@@ -39,7 +39,7 @@ public class OffsetHandler extends Check implements PostPredictionCheck {
 
         if (completePredictionEvent.isCancelled()) return;
 
-//        player.sendMessage("x(" + player.deltaX() + "), z(" + player.deltaZ() + ", y(" + player.deltaY() + ")");
+        //player.sendMessage("x(" + player.deltaX() + "), z(" + player.deltaZ() + ", y(" + player.deltaY() + ")");
         if ((offset >= threshold || offset >= immediateSetbackThreshold)) {
             advantageGained += offset;
             giveOffsetLenienceNextTick(offset);
