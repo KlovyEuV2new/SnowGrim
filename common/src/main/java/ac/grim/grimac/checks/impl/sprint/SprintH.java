@@ -111,7 +111,6 @@ public class SprintH extends Check implements PostPredictionCheck {
         boolean suspicious = player.isSprinting && player.isSprintSimulation()
                 && player.stopSprintTick == (player.tick -2)
                 && player.startSprintTick == (player.tick -1);
-        player.sendMessage("s");
         if (suspicious) {
             if (buffer.enabled) {
                 buffer.add();
