@@ -404,14 +404,13 @@ public class CheckManagerListener extends PacketListenerAbstract {
         if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
             WrapperPlayClientEntityAction wrapper = new WrapperPlayClientEntityAction(event);
 
-            String key = event.getPacketType().getName() + ";" + wrapper.getAction().name();
-            player.ticks.put(key, player.tick);
+            if (wrapper.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) player.stopSprintTick = player.tick;
+            else if (wrapper.getAction() == WrapperPlayClientEntityAction.Action.START_SPRINTING) player.startSprintTick = player.tick;
         } else if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
                 WrapperPlayClientInteractEntity wrapper = new WrapperPlayClientInteractEntity(event);
 
-                String key = event.getPacketType().getName() + ";" + wrapper.getAction().name();
-                player.ticks.put(key, player.tick);
+                if (wrapper.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) player.attackTick = player.tick;
             }
         }
 

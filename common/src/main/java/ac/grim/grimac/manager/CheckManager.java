@@ -75,6 +75,7 @@ import com.google.common.collect.ImmutableClassToInstanceMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CheckManager {
+    private final GrimPlayer player;
     private static final AtomicBoolean initedAtomic = new AtomicBoolean(false);
     private static boolean inited;
     public final ClassToInstanceMap<AbstractCheck> allChecks;
@@ -90,6 +91,7 @@ public class CheckManager {
     private PacketEntityReplication packetEntityReplication = null;
 
     public CheckManager(GrimPlayer player) {
+        this.player = player;
         doPacketChecks = new ImmutableClassToInstanceMap.Builder<DoPacketCheck>()
                 .put(BadPacketsAA.class, new BadPacketsAA(player))
                 .build();

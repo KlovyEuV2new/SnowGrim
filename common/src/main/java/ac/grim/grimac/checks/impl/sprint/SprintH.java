@@ -5,12 +5,10 @@ import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
 import ac.grim.grimac.player.GrimPlayer;
-import ac.grim.grimac.utils.anticheat.TicksUtil;
 import ac.grim.grimac.utils.collisions.FluidUtil;
 import ac.grim.grimac.utils.collisions.IceUtil;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 
 @CheckData(name = "SprintH", description = "Sprint spoof simulation reset", setback = 0)
@@ -76,8 +74,16 @@ public class SprintH extends Check implements PostPredictionCheck {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
             if (packet.getAction() != WrapperPlayClientInteractEntity.InteractAction.ATTACK) return;
 
+//            player.sendMessage(
+//                    "§7[SPRINT DEBUG] " +
+//                            "attackTick=" + player.tick +
+//                            " stopTick=" + player.stopSprintTick +
+//                            " startTick=" + player.startSprintTick +
+//                            " isSprint=" + player.isSprinting
+//            );
+
             if (player.isSprinting || IceUtil.isOnIce(player) || FluidUtil.isInFluid(player) || player.inVehicle()
-                    || TicksUtil.getTick(player, PacketType.Play.Client.ENTITY_ACTION, WrapperPlayClientEntityAction.Action.STOP_SPRINTING) != (player.tick -1)) {
+                    || player.stopSprintTick != (player.tick -1)) {
                 if (buffer.enabled) buffer.remove();
                 shouldCheck = false;
                 return;
@@ -102,12 +108,10 @@ public class SprintH extends Check implements PostPredictionCheck {
     }
 
     private void checkSprint() {
-        if (player.isJumping) return;
-
         boolean suspicious = player.isSprinting && player.isSprintSimulation()
-                && TicksUtil.getTick(player, PacketType.Play.Client.ENTITY_ACTION, WrapperPlayClientEntityAction.Action.STOP_SPRINTING) == (player.tick -2)
-                && TicksUtil.getTick(player, PacketType.Play.Client.ENTITY_ACTION, WrapperPlayClientEntityAction.Action.START_SPRINTING) == (player.tick -1);
-
+                && player.stopSprintTick == (player.tick -2)
+                && player.startSprintTick == (player.tick -1);
+        player.sendMessage("s");
         if (suspicious) {
             if (buffer.enabled) {
                 buffer.add();

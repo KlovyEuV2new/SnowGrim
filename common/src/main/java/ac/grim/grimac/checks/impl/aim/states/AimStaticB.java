@@ -19,11 +19,12 @@ public class AimStaticB extends Check implements RotationCheck {
     }
     @Override
     public void process(final RotationUpdate rotationUpdate) {
-        if (player.actionManager.hasAttackedSince(500) && player.lastAttackedRealTick > 15) {
-            float dx = rotationUpdate.getDeltaXRotABS();
-            float dy = rotationUpdate.getDeltaYRotABS();
+        float dx = rotationUpdate.getDeltaXRotABS();
+        float dy = rotationUpdate.getDeltaYRotABS();
 
-            float ax = Math.abs(lastDx - dx), ay = Math.abs(lastDy - dy);
+        float ax = Math.abs(lastDx - dx), ay = Math.abs(lastDy - dy);
+
+        if (player.actionManager.hasAttackedSince(500) && player.lastAttackedRealTick > 15) {
 
             if (player.isCinematicRotation()) return;
             if ((ax < -0.0f && ax % -0.5f == -0.0f || ax > 0.0f && ax % 0.5f == 0.0f) ||

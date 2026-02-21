@@ -253,6 +253,7 @@ public class GrimPlayer implements GrimUser {
     public int totalFlyingPacketsSent;
     public boolean hasInventoryOpen;
     public long lastInventoryOpen;
+    public long stopSprintTick, startSprintTick, attackTick;
     public InventoryDesyncStatus inventoryDesyncStatus;
     public final Queue<BlockPlaceSnapshot> placeUseItemPackets = new LinkedBlockingQueue<>();
     public final Queue<BlockBreak> queuedBreaks = new LinkedBlockingQueue<>();
