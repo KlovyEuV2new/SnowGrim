@@ -8,7 +8,7 @@ import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
 import org.jetbrains.annotations.NotNull;
 
 
-// $author sp0ff
+// $author sp0ff & StormGrim
 @CheckData(name = "AimStaticA",experimental = true,maxBuffer = 3)
 public class AimStaticA extends Check implements RotationCheck {
     private double buffer;
