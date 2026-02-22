@@ -1,5 +1,5 @@
-# \u00BB это " (двойной >>), ANSI и UTF-8 интерпретируют это по-разному... вы можете даже увидеть "?" из-за этого
-prefix: "&bSnow &8\u00BB"
+# \u00BB is » (double >>), ANSI and UTF-8 interpret this differently... you may even see ? due to this
+prefix: "&#6EADFFS&#6BA1FEn&#6894FDo&#6588FCw &8>&r"
 
 alerts-enabled: "%prefix% &fОповещения включены"
 alerts-disabled: "%prefix% &fОповещения отключены"
@@ -40,8 +40,8 @@ run-as-player-or-console: "%prefix% &cЭту команду могут испо�
 # %experimental%
 # %vl% - нарушения
 # %verbose% - дополнительная информация от проверки, например, смещения, не все проверки добавляют информацию.
-alerts-format: "%prefix% &f%player% &bпровалил &f%check_name%%experimental% &f(x&c%vl%&f) &7%verbose%"
-alerts-format-proxy: "%prefix% &f[&cproxy&f] &f%player% &bпровалил &f%check_name%%experimental% &f(x&c%vl%&f) &7%verbose%"
+alerts-format: "%prefix% &#6588FC%player% &f| &#AFD0FC%check_name%%experimental% &f| &#6588FCx%vl% &7%verbose%"
+alerts-format-proxy: "%prefix% &8[Proxy]&r &#6588FC%player% &f| &#AFD0FC%check_name%%experimental% &f| &#6588FCx%vl% &7%verbose%"
 experimental-symbol: "*"
 
 profile:
@@ -75,3 +75,4 @@ grim-history-disabled: "%prefix% &cПодсистема истории откл�
 grim-history-header: "%prefix% &bПоказ журналов для &f%player% (&f%page%&b/&f%maxPages%&f)"
 # Valid placeholders: %prefix% %grim_version% %client_brand% %client_version% %server_version% %check% %vl% %verbose% %timeago% %server%
 grim-history-entry: "%prefix% &8[&f%server%&8] &bПровалено &f%check% (x&c%vl%&f) &7%verbose% (&b%timeago% назад&7)"
+
