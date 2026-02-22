@@ -37,7 +37,7 @@ public class BadPacketsA extends Check implements PacketCheck {
                     player.onPacketCancel();
                 }
 
-                flagAndAlert("(C) last packet is slot change.");
+                flagAndAlert("(C) invalid slot change packet pattern.");
             }
 
             lastSlot = newSlot;
