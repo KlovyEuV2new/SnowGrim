@@ -29,7 +29,6 @@ import ac.grim.grimac.utils.data.EntityHitData;
 import ac.grim.grimac.utils.data.HitData;
 import ac.grim.grimac.utils.data.Pair;
 import ac.grim.grimac.utils.data.packetentity.PacketEntity;
-import ac.grim.grimac.utils.data.packetentity.PacketEntitySizeable;
 import ac.grim.grimac.utils.data.packetentity.dragon.PacketEntityEnderDragonPart;
 import ac.grim.grimac.utils.math.Vector3dm;
 import ac.grim.grimac.utils.nmsutil.ReachUtils;
@@ -179,16 +178,10 @@ public class Reach extends Check implements PacketCheck {
             switch (result.type()) {
                 case REACH -> {
                     String added = ", type=" + reachEntity.type.getName().getKey();
-                    if (reachEntity instanceof PacketEntitySizeable sizeable) {
-                        added += ", size=" + sizeable.size;
-                    }
                     flagAndAlert(result.verbose() + added);
                 }
                 case HITBOX -> {
                     String added = "type=" + reachEntity.type.getName().getKey();
-                    if (reachEntity instanceof PacketEntitySizeable sizeable) {
-                        added += ", size=" + sizeable.size;
-                    }
                     player.checkManager.getCheck(Hitboxes.class).flagAndAlert(result.verbose() + added);
                 }
                 case WALL_HIT -> {
@@ -247,7 +240,7 @@ public class Reach extends Check implements PacketCheck {
         for (Vector3dm lookVec : possibleLookDirs) {
             for (double eye : possibleEyeHeights) {
                 eyePos.setY(from.getY() + eye);
-                Vector3dm endReachPos = eyePos.clone().add(lookVec.getX() * distance, lookVec.getY() * distance, lookVec.getZ() * distance);
+                Vector3dm endReachPos = eyePos.clone().add(new Vector3dm(lookVec.getX() * distance, lookVec.getY() * distance, lookVec.getZ() * distance));
 
                 Vector3dm intercept = ReachUtils.calculateIntercept(targetBox, eyePos, endReachPos).first();
 

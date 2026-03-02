@@ -13,7 +13,6 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +96,7 @@ public class AuraB extends Check implements PacketCheck {
         return GrimMath.getAverageDouble(movements);
     }
 
-    public void onReload(ConfigManager config) {
+    public void reload(ConfigManager config) {
         this.maxAccuracy = Math.min(100, config.getIntElse(this.getConfigName() + ".max-accuracy", 90));
         this.sampleSize =  config.getIntElse(this.getConfigName() + ".sample-size", 25);
         this.minDistance = config.getDoubleElse(this.getConfigName() + ".min-distance", 0.3);

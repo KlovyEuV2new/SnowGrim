@@ -2,6 +2,7 @@ package ac.grim.grimac.command.commands;
 
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.command.BuildableCommand;
+import ac.grim.grimac.manager.init.start.CommandRegister;
 import ac.grim.grimac.manager.init.start.SuperDebug;
 import ac.grim.grimac.platform.api.sender.Sender;
 import ac.grim.grimac.utils.anticheat.LogUtil;
@@ -69,7 +70,7 @@ public class GrimLog implements BuildableCommand {
 
     @Override
     public void register(CommandManager<Sender> commandManager) {
-        Command<Sender> command = commandManager.commandBuilder("snowgrim", "snowgrimac")
+        Command<Sender> command = commandManager.commandBuilder(CommandRegister.cmd1, CommandRegister.cmd2)
                 .literal("log", "logs")
                 .permission("snowgrim.log")
                 .required("flagId", IntegerParser.integerParser())

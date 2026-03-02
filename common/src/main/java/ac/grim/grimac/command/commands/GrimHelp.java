@@ -2,6 +2,7 @@ package ac.grim.grimac.command.commands;
 
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.command.BuildableCommand;
+import ac.grim.grimac.manager.init.start.CommandRegister;
 import ac.grim.grimac.platform.api.sender.Sender;
 import ac.grim.grimac.utils.anticheat.MessageUtil;
 import org.incendo.cloud.CommandManager;
@@ -13,7 +14,7 @@ public class GrimHelp implements BuildableCommand {
     @Override
     public void register(CommandManager<Sender> commandManager) {
         commandManager.command(
-                commandManager.commandBuilder("snowgrim", "snowgrimac")
+                commandManager.commandBuilder(CommandRegister.cmd1, CommandRegister.cmd2)
                         .literal("help", Description.of("Display help information"))
                         .permission("snowgrim.help")
                         .handler(this::handleHelp)

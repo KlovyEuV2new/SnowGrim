@@ -24,6 +24,8 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class CommandRegister implements StartableInitable {
 
+    public static String cmd1, cmd2;
+
     public static final CloudKey<Requirements<Sender, SenderRequirement>> REQUIREMENT_KEY
             = CloudKey.of("requirements", new TypeToken<>() {});
 
@@ -35,6 +37,8 @@ public class CommandRegister implements StartableInitable {
 
     // Public static method that can be called on platforms where command must be registered earlier than InitManager.load()
     public static void registerCommands(CommandManager<Sender> commandManager) {
+        cmd1 = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("command.1","snowgrim");
+        cmd2 = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("command.2","snowgrimac");
         if (commandsRegistered) return;
         new GrimPerf().register(commandManager);
         new GrimDebug().register(commandManager);

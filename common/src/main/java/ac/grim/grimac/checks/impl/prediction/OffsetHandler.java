@@ -5,25 +5,26 @@ import ac.grim.grimac.api.config.ConfigManager;
 import ac.grim.grimac.api.event.events.CompletePredictionEvent;
 import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.checks.CheckData;
+import ac.grim.grimac.checks.impl.movement.ElytraOffset;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@CheckData(name = "Simulation", decay = 0.02)
+@CheckData(name = "Simulation", decay = 0.02,description = "Simulate player movement.")
 public class OffsetHandler extends Check implements PostPredictionCheck {
     private static final AtomicInteger flags = new AtomicInteger(0);
     // Config
-    private double setbackDecayMultiplier;
-    private double threshold;
-    private double immediateSetbackThreshold;
-    private double maxAdvantage;
-    private double maxCeiling;
-    private double setbackViolationThreshold;
+    double setbackDecayMultiplier;
+    double threshold;
+    double immediateSetbackThreshold;
+    double maxAdvantage;
+    double maxCeiling;
+    double setbackViolationThreshold;
     // Current advantage gained
-    private double advantageGained = 0;
-    private FType fType;
+    double advantageGained = 0;
+    private String movementLeniency;
 
     public OffsetHandler(GrimPlayer player) {
         super(player);
@@ -39,7 +40,6 @@ public class OffsetHandler extends Check implements PostPredictionCheck {
 
         if (completePredictionEvent.isCancelled()) return;
 
-        //player.sendMessage("x(" + player.deltaX() + "), z(" + player.deltaZ() + ", y(" + player.deltaY() + ")");
         if ((offset >= threshold || offset >= immediateSetbackThreshold)) {
             advantageGained += offset;
             giveOffsetLenienceNextTick(offset);
@@ -59,23 +59,22 @@ public class OffsetHandler extends Check implements PostPredictionCheck {
                     humanFormattedOffset = humanFormattedOffset.replace("0.", ".");
                 }
 
-                String verbose = humanFormattedOffset + ", x=" + (!GrimAPI.DEV_MODE ?
-                        String.format("%.4f",player.deltaX()) + ", y=" + String.format("%.4f",player.deltaY()) + ", z=" + String.format("%.4f",player.deltaZ()) + " /gl " + flagId :
-                        player.deltaX() + ", y=" + player.deltaY() + ", z=" + player.deltaZ() + " /gl " + flagId);
+                String verbose = humanFormattedOffset + " /gl " + flagId;
                 if (flag(verbose)) {
-                    if (alert(verbose)) {
-                        flags.incrementAndGet(); // This debug was sent somewhere
-                        predictionComplete.setIdentifier(flagId);
+                    if (player.isGliding) {
+                        player.checkManager.getPostPredictionCheck(ElytraOffset.class).flagAndAlert(verbose);
+                    }
+                    else {
+                        if (alert(verbose)) {
+                            flags.incrementAndGet(); // This debug was sent somewhere
+                            predictionComplete.setIdentifier(flagId);
+                        }
                     }
 
                     if ((advantageGained >= maxAdvantage || offset >= immediateSetbackThreshold)
                             && !isNoSetbackPermission()
                             && violations >= setbackViolationThreshold) {
-                        if (fType.equals(FType.FULL_SETBACK)) {
-                            player.getSetbackTeleportUtil().teleportBack();
-                        } else {
-                            player.getSetbackTeleportUtil().executeViolationSetback();
-                        }
+                        player.getSetbackTeleportUtil().executeViolationSetback();
                     }
                 }
             }
@@ -86,10 +85,6 @@ public class OffsetHandler extends Check implements PostPredictionCheck {
         }
 
         removeOffsetLenience();
-    }
-
-    public enum FType {
-        FULL_SETBACK, VIOLATION_SETBACK
     }
 
     private void giveOffsetLenienceNextTick(double offset) {
@@ -117,14 +112,40 @@ public class OffsetHandler extends Check implements PostPredictionCheck {
         maxAdvantage = config.getDoubleElse("Simulation.max-advantage", 1);
         maxCeiling = config.getDoubleElse("Simulation.max-ceiling", 4);
         setbackViolationThreshold = config.getDoubleElse("Simulation.setback-violation-threshold", 1);
-        String raw = config.getStringElse(
-                "Simulation.false-type",
-                "VIOLATION_SETBACK"
-        ).toUpperCase();
-        try {
-            fType = FType.valueOf(raw);
-        } catch (IllegalArgumentException e) {
-            fType = FType.VIOLATION_SETBACK;
+        movementLeniency = config.getStringElse("Simulation.movement-Leniency", "strong");
+        switch (movementLeniency) {
+            case "verystrong":
+                setbackDecayMultiplier= 0.999;
+                threshold = 0.001;
+                immediateSetbackThreshold = 0.01;
+                maxAdvantage = 1;
+                maxCeiling = 4;
+                setbackViolationThreshold = 1;
+                break;
+            case "strong":
+                setbackDecayMultiplier= 0.999;
+                threshold = 0.001;
+                immediateSetbackThreshold = 0.1;
+                maxAdvantage = 1;
+                maxCeiling = 4;
+                setbackViolationThreshold = 1;
+                break;
+            case "balanced":
+                setbackDecayMultiplier= 0.999;
+                threshold = 0.03;
+                immediateSetbackThreshold = 0.1;
+                maxAdvantage = 1;
+                maxCeiling = 4;
+                setbackViolationThreshold = 1;
+                break;
+            case "balancedHigh":
+                setbackDecayMultiplier= 0.999;
+                threshold = 0.09;
+                immediateSetbackThreshold = 0.1;
+                maxAdvantage = 1;
+                maxCeiling = 4;
+                setbackViolationThreshold = 1;
+                break;
         }
         if (maxAdvantage == -1) maxAdvantage = Double.MAX_VALUE;
         if (immediateSetbackThreshold == -1) immediateSetbackThreshold = Double.MAX_VALUE;

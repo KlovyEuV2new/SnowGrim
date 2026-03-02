@@ -3,6 +3,7 @@ package ac.grim.grimac.command.commands;
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.checks.debug.HitboxDebugHandler;
 import ac.grim.grimac.command.BuildableCommand;
+import ac.grim.grimac.manager.init.start.CommandRegister;
 import ac.grim.grimac.platform.api.command.PlayerSelector;
 import ac.grim.grimac.platform.api.sender.Sender;
 import ac.grim.grimac.player.GrimPlayer;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public class GrimDebug implements BuildableCommand {
 
     public void register(CommandManager<Sender> commandManager) {
-        Command.Builder<Sender> grimCommand = commandManager.commandBuilder("snowgrim", "snowgrimac");
+        Command.Builder<Sender> grimCommand = commandManager.commandBuilder(CommandRegister.cmd1, CommandRegister.cmd2);
 
         // Register "debug" subcommand
         Command.Builder<Sender> debugCommand = grimCommand

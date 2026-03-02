@@ -4,6 +4,7 @@ import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.api.GrimIdentity;
 import ac.grim.grimac.command.BuildableCommand;
 import ac.grim.grimac.command.CommandUtils;
+import ac.grim.grimac.manager.init.start.CommandRegister;
 import ac.grim.grimac.platform.api.player.PlatformPlayer;
 import ac.grim.grimac.platform.api.sender.Sender;
 import ac.grim.grimac.player.GrimPlayer;
@@ -29,7 +30,7 @@ public class GrimList implements BuildableCommand {
 
     @Override
     public void register(CommandManager<Sender> commandManager) {
-        commandManager.command(commandManager.commandBuilder("snowgrim", "snowgrimac")
+        commandManager.command(commandManager.commandBuilder(CommandRegister.cmd1, CommandRegister.cmd2)
                 .literal("list")
                 .permission("snowgrim.list")
                 .required("list", StringParser.stringParser(), SUGGESTIONS)

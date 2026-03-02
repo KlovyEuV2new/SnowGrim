@@ -1,5 +1,6 @@
 package ac.grim.grimac.command.commands;
 
+import ac.grim.grimac.manager.init.start.CommandRegister;
 import ac.grim.grimac.platform.api.sender.Sender;
 import ac.grim.grimac.predictionengine.MovementCheckRunner;
 import net.kyori.adventure.text.Component;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class GrimPerf {
 
     public void register(CommandManager<Sender> commandManager) {
-        Command.Builder<Sender> grimCommand = commandManager.commandBuilder("snowgrim", "snowgrimac");
+        Command.Builder<Sender> grimCommand = commandManager.commandBuilder(CommandRegister.cmd1, CommandRegister.cmd2);
 
         Command.Builder<Sender> configuredBuilder = grimCommand
                 .literal("perf", "performance")

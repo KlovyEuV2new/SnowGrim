@@ -22,6 +22,10 @@ alerts:
         # Должны ли оповещения, полученные с других серверов, быть объявлены на этом сервере?
         receive: false
 
+command:
+    1: "snowgrim"
+    2: "snowgrimac"
+
 ClientA:
     blocked-brands:
         - "vanilla/"

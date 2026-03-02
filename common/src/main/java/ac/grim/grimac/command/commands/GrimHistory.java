@@ -2,6 +2,7 @@ package ac.grim.grimac.command.commands;
 
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.command.BuildableCommand;
+import ac.grim.grimac.manager.init.start.CommandRegister;
 import ac.grim.grimac.manager.violationdatabase.Violation;
 import ac.grim.grimac.manager.violationdatabase.ViolationDatabaseManager;
 import ac.grim.grimac.platform.api.player.OfflinePlatformPlayer;
@@ -20,7 +21,7 @@ public class GrimHistory implements BuildableCommand {
     @Override
     public void register(CommandManager<Sender> commandManager) {
         commandManager.command(
-                commandManager.commandBuilder("snowgrim", "snowgrimac")
+                commandManager.commandBuilder(CommandRegister.cmd1, CommandRegister.cmd2)
                         .literal("history", "hist")
                         .permission("snowgrim.help")
                         .required("target", StringParser.stringParser(), GrimAPI.INSTANCE.getCommandAdapter().onlinePlayerSuggestions())
