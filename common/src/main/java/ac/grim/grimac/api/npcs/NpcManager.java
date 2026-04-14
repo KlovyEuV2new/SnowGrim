@@ -378,11 +378,26 @@ public class NpcManager {
 
     private static void removeNpcFromTab(@NotNull GrimPlayer player, @NotNull TrackedNpc npc) {
         if (isModernVersion) {
+            EnumSet<WrapperPlayServerPlayerInfoUpdate.Action> actions =
+                    EnumSet.of(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LISTED);
+
+            WrapperPlayServerPlayerInfoUpdate.PlayerInfo data =
+                    new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(
+                            new UserProfile(npc.uuid, npc.name),
+                            false,
+                            0,
+                            GameMode.SURVIVAL,
+                            null,
+                            null
+                    );
+            sendPacketSafely(player, new WrapperPlayServerPlayerInfoUpdate(actions, Collections.singletonList(data)));
             sendPacketSafely(player, new WrapperPlayServerPlayerInfoRemove(npc.uuid));
         } else {
             UserProfile profile = new UserProfile(npc.uuid, npc.name);
-            WrapperPlayServerPlayerInfo.PlayerData data = new WrapperPlayServerPlayerInfo.PlayerData(Component.text(npc.name), profile, GameMode.SURVIVAL, 0);
-            sendPacketSafely(player, new WrapperPlayServerPlayerInfo(WrapperPlayServerPlayerInfo.Action.REMOVE_PLAYER, data));
+            WrapperPlayServerPlayerInfo.PlayerData data = new WrapperPlayServerPlayerInfo.PlayerData(
+                    Component.text(npc.name), profile, GameMode.SURVIVAL, 0);
+            sendPacketSafely(player, new WrapperPlayServerPlayerInfo(
+                    WrapperPlayServerPlayerInfo.Action.REMOVE_PLAYER, data));
         }
     }
 
