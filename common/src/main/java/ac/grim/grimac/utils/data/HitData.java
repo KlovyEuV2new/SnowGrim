@@ -9,7 +9,7 @@ public class HitData {
         this.blockHitLocation = blockHitLocation;
     }
 
-    public ac.grim.grimac.utils.math.Vector3dm getBlockHitLocation() {
+    public Vector3dm getBlockHitLocation() {
         return this.blockHitLocation;
     }
 }

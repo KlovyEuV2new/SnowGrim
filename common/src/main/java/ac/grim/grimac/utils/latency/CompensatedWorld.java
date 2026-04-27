@@ -16,6 +16,7 @@ import ac.grim.grimac.utils.nmsutil.GetBoundingBox;
 import ac.grim.grimac.utils.nmsutil.Materials;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
+import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
@@ -207,7 +208,7 @@ public class CompensatedWorld {
             // no need to support Folia on this one because Folia is 1.19+ only
             GrimAPI.INSTANCE.getScheduler().getGlobalRegionScheduler().run(GrimAPI.INSTANCE.getGrimPlugin(), () -> {
                 // And then we jump back to the netty thread to simulate that Via sent the confirmation
-                player.runSafely(() -> applyBlockChanges(toApplyBlocks));
+                ChannelHelper.runInEventLoop(player.user.getChannel(), () -> applyBlockChanges(toApplyBlocks));
             });
         }
     }
@@ -533,7 +534,7 @@ public class CompensatedWorld {
         WrappedBlockState block = getBlock(x, y, z);
 
         if (block.getType() == StateTypes.DETECTOR_RAIL) { // Rails hard power block below itself
-            boolean isPowered = block.hasProperty(StateValue.POWERED) && block.isPowered();
+            boolean isPowered = (boolean) block.getInternalData().getOrDefault(StateValue.POWERED, false);
             return face == BlockFace.UP && isPowered ? 15 : 0;
         } else if (block.getType() == StateTypes.REDSTONE_TORCH) {
             return face != BlockFace.UP && block.isLit() ? 15 : 0;

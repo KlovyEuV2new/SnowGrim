@@ -141,7 +141,7 @@ public class ReachInterpolationData {
     public SimpleCollisionBox getPossibleLocationCombined() {
         int interpSteps = getInterpolationSteps();
 
-        int interpolationStepsLowBound = Math.min(this.interpolationStepsLowBound, this.cancelledLerpInterpolationStepsLowBound);
+//        int interpolationStepsLowBound = Math.min(this.interpolationStepsLowBound, this.cancelledLerpInterpolationStepsLowBound); // Temp test
 
 
         double stepMinX = (targetLocation.minX - startingLocation.minX) / (double) interpSteps;

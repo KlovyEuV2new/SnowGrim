@@ -297,6 +297,10 @@ public class GrimPlayer implements GrimUser {
 
     public final RotData rotationData;
 
+    public CompensatedInventory getInventory() {
+        return inventory;
+    }
+
     public static class RotData {
         public double deltaYaw;
         public double deltaPitch;
