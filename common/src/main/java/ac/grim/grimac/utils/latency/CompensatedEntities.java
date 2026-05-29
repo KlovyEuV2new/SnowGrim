@@ -162,9 +162,10 @@ public class CompensatedEntities {
             return;
         }
 
-        passenger.setPositionRaw(player, riding.getPossibleLocationBoxes().offset(0, BoundingBoxSize.getMyRidingOffset(riding) + BoundingBoxSize.getPassengerRidingOffset(player, passenger), 0));
+        passenger.setPositionRaw(player, riding.getPossibleLocationBoxes().offset(0,
+                BoundingBoxSize.getMyRidingOffset(riding) + BoundingBoxSize.getPassengerRidingOffset(player, passenger), 0));
 
-        for (PacketEntity passengerPassenger : riding.passengers) {
+        for (PacketEntity passengerPassenger : passenger.passengers) {
             tickPassenger(passenger, passengerPassenger);
         }
     }
