@@ -222,8 +222,8 @@ InventoryH:
     diff: 0.99 # ms
 
 ElytraJ:
-    enabled: true
-    baseMaxSpeed: 1.93
+    enabled: false
+    baseMaxSpeed: 2.0 # 1.93
     speedMultiplierFactor: 50.0
 
 SimulationDouble: # repeat movement pattern
