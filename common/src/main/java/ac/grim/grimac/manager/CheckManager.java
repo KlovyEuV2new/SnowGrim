@@ -262,6 +262,7 @@ public class CheckManager {
                 .put(ShulkerOffset.class, new ShulkerOffset(player))
                 //.put(FlyingOffset.class,new FlyingOffset(player))
                 .put(ElytraN.class,new ElytraN(player))
+                .put(ElytraO.class,new ElytraO(player))
 //                .put(SimulationB.class, new SimulationB(player))
                 .put(SprintB.class, new SprintB(player))
                 .put(SprintC.class, new SprintC(player))
