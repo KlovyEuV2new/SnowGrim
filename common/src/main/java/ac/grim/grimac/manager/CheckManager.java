@@ -35,7 +35,6 @@ import ac.grim.grimac.checks.impl.exploit.ExploitA;
 import ac.grim.grimac.checks.impl.exploit.ExploitB;
 import ac.grim.grimac.checks.impl.exploit.ExploitC;
 import ac.grim.grimac.checks.impl.exploit.ExploitD;
-import ac.grim.grimac.checks.impl.flight.FlightB;
 import ac.grim.grimac.checks.impl.movement.*;
 import ac.grim.grimac.checks.impl.groundspoof.NoFall;
 import ac.grim.grimac.checks.impl.inventory.*;
@@ -179,8 +178,9 @@ public class CheckManager {
                 .put(AutoClickerA.class,new AutoClickerA(player))
                 .put(AutoclickerB.class,new AutoclickerB(player))
                 .put(AimE.class, new AimE(player))
-                .put(FlightB.class, new FlightB(player))
+                //.put(FlightB.class, new FlightB(player))
                 .put(ElytraJ.class, new ElytraJ(player))
+                .put(ElytraP.class,new ElytraP(player))
                 .put(NpcAura.class, new NpcAura(player))
                 .put(NpcPacketListener.class, new NpcPacketListener(player))
                 .put(SetBackTimeListener.class, new SetBackTimeListener(player)) // Must be last class otherwise we can't check while blocking packets
@@ -259,8 +259,8 @@ public class CheckManager {
                 .put(NoSlow.class, new NoSlow(player))
                 //.put(SimulationJump.class, new SimulationJump(player))
                 .put(ElytraOffset.class, new ElytraOffset(player))
-                .put(ShulkerOffset.class, new ShulkerOffset(player))
-                //.put(FlyingOffset.class,new FlyingOffset(player))
+                //.put(ShulkerOffset.class, new ShulkerOffset(player))
+                .put(FlyingOffset.class,new FlyingOffset(player))
                 .put(ElytraN.class,new ElytraN(player))
                 .put(ElytraO.class,new ElytraO(player))
 //                .put(SimulationB.class, new SimulationB(player))

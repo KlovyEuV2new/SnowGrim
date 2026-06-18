@@ -20,6 +20,7 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.ConnectionState;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
@@ -41,6 +42,7 @@ import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import com.github.retrooper.packetevents.wrapper.play.client.*;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerAcknowledgeBlockChanges;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot;
 
 import java.util.ArrayList;
@@ -406,6 +408,7 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
             if (wrapper.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) player.stopSprintTick = player.tick;
             else if (wrapper.getAction() == WrapperPlayClientEntityAction.Action.START_SPRINTING) player.startSprintTick = player.tick;
+            else if (wrapper.getAction() == WrapperPlayClientEntityAction.Action.START_FLYING_WITH_ELYTRA) player.isFallFlying = true;
         } else if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
                 WrapperPlayClientInteractEntity wrapper = new WrapperPlayClientInteractEntity(event);
@@ -625,6 +628,18 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Server.BUNDLE) {
             player.packetStateData.sendingBundlePacket = !player.packetStateData.sendingBundlePacket;
+        }
+
+        if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
+            WrapperPlayServerEntityMetadata packet =
+                    new WrapperPlayServerEntityMetadata(event);
+
+            for (EntityData data : packet.getEntityMetadata()) {
+                if (data.getIndex() == 0) {
+                    byte flags = (byte) data.getValue();
+                    player.setFlags(flags);
+                }
+            }
         }
 
         player.checkManager.onPacketSend(event);

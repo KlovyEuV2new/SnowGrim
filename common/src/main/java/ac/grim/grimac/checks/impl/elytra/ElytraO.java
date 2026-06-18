@@ -10,7 +10,7 @@ import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 // Ложных мало, но чуть есть. (Основные которые прям мешают пофиксил)
 @CheckData(name = "ElytraO")
 public class ElytraO extends Check implements PostPredictionCheck {
-    private int tick;
+    private long tick;
 
     public ElytraO(GrimPlayer player) {
         super(player);

@@ -55,6 +55,7 @@ import com.github.retrooper.packetevents.protocol.attribute.Attributes;
 import com.github.retrooper.packetevents.protocol.component.ComponentTypes;
 import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemEquippable;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityType;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
@@ -62,6 +63,8 @@ import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.player.*;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.dimension.DimensionType;
+import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.protocol.world.states.defaulttags.BlockTags;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
@@ -174,7 +177,7 @@ public class GrimPlayer implements GrimUser {
     public boolean isSwimming;
     public boolean wasSwimming;
     public boolean isClimbing, wasClimbing;
-    public boolean isGliding;
+    public boolean isGliding, isFallFlying;
     public boolean wasGliding;
     public boolean isRiptidePose = false;
     public boolean hasBukkitInventoryOpen;
@@ -293,6 +296,11 @@ public class GrimPlayer implements GrimUser {
     public boolean lastJumping;
 
     public List<EntityData<?>> lastMetadata;
+
+    @Getter
+    @Setter
+    private byte flags;
+
     public List<WrapperPlayServerUpdateAttributes.Property> lastAttributes;
 
     public final RotData rotationData;
@@ -433,6 +441,29 @@ public class GrimPlayer implements GrimUser {
         set.addAll(getPossibleVelocitiesMinusKnockback());
         set.addAll(getPossibleVelocitiesMinusKnockback());
         return set;
+    }
+
+    public boolean isOnLadder() {
+        if (this.gamemode.equals(GameMode.SPECTATOR)) {
+            return false;
+        } else {
+            Vector3i blockpos = new Vector3i(
+                    (int) Math.floor(x),
+                    (int) Math.floor(y),
+                    (int) Math.floor(z)
+            );
+            WrappedBlockState block = compensatedWorld.getBlock(blockpos);
+
+            if (BlockTags.CLIMBABLE.contains(block.getType())) {
+                return true;
+            } else
+//            if (BlockTags.TRAPDOORS.contains(block.getType()) && this.canGoThroughtTrapDoorOnLadder(blockpos, blockstate)) {
+//                return true;
+//            } else
+            {
+                return false;
+            }
+        }
     }
 
     public Vector3d move() {
@@ -851,6 +882,25 @@ public class GrimPlayer implements GrimUser {
         return compensatedEntities.self.inVehicle();
     }
 
+    public void stopGliding() {
+        isFallFlying = false;
+        flags &= (byte) ~0x80;
+
+        WrapperPlayServerEntityMetadata metadata =
+                new WrapperPlayServerEntityMetadata(
+                        entityID,
+                        List.of(
+                                new EntityData<>(
+                                        0,
+                                        EntityDataTypes.BYTE,
+                                        flags
+                                )
+                        )
+                );
+
+        user.sendPacket(metadata);
+    }
+
     public PacketEntity getVehicle() {
         return compensatedEntities.self.riding;
     }
@@ -1042,6 +1092,10 @@ public class GrimPlayer implements GrimUser {
 
     public boolean isInWaterOrRain() {
         return compensatedWorld.isRaining || Collisions.hasMaterial(this, boundingBox.copy().expand(0.1f), (block) -> Materials.isWater(CompensatedWorld.blockVersion, block.first()));
+    }
+
+    public boolean isInWater() {
+        return Collisions.hasMaterial(this, boundingBox.copy().expand(0.1f), (block) -> Materials.isWater(CompensatedWorld.blockVersion, block.first()));
     }
 
     @Contract(pure = true)

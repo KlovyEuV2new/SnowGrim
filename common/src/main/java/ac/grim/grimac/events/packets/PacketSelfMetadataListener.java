@@ -72,26 +72,37 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
 
                 EntityData<?> watchable = WatchableIndexUtil.getIndex(entityMetadata.getEntityMetadata(), 0);
 
-                if (watchable != null) {
+                if (watchable != null && watchable.getValue() instanceof Byte) {
                     Object zeroBitField = watchable.getValue();
 
                     if (zeroBitField instanceof Byte) {
+                        EntityData<Byte> data = (EntityData<Byte>) watchable;
+
                         byte field = (byte) zeroBitField;
                         boolean isGliding = (field & 0x80) == 0x80 && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9);
                         boolean isSwimming = (field & 0x10) == 0x10;
                         boolean isSprinting = (field & 0x8) == 0x8;
 
+                        if (isGliding && !player.isFallFlying) {
+                            isGliding = false;
+                            field &= (byte) ~0x80;
+                            data.setValue(field);
+                            event.markForReEncode(true);
+                        }
+                        if (player.isGliding && !isGliding) player.isFallFlying = false;
+
                         if (!hasSendTransaction) player.sendTransaction();
                         hasSendTransaction = true;
 
+                        boolean finalIsGliding = isGliding;
                         player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
                             player.isSwimming = isSwimming;
                             player.lastSprinting = isSprinting;
                             // Protect this due to players being able to get the server to spam this packet a lot
-                            if (player.isGliding != isGliding) {
+                            if (player.isGliding != finalIsGliding) {
                                 player.pointThreeEstimator.updatePlayerGliding();
                             }
-                            player.isGliding = isGliding;
+                            player.isGliding = finalIsGliding;
                         });
                     }
                 }

@@ -58,7 +58,7 @@ public final class Collisions {
 
             Arrays.asList(Axis.Z, Axis.X, Axis.Y),
             Arrays.asList(Axis.Z, Axis.Y, Axis.X));
-    private static final List<List<Axis>> nonStupidityCombinations = Arrays.asList(
+    public static final List<List<Axis>> nonStupidityCombinations = Arrays.asList(
             Arrays.asList(Axis.Y, Axis.X, Axis.Z),
             Arrays.asList(Axis.Y, Axis.Z, Axis.X));
 

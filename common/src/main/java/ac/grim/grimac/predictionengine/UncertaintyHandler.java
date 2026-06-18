@@ -293,6 +293,7 @@ public class UncertaintyHandler {
         return 0;
     }
 
+
     public double reduceOffset(double offset) {
         // Boats are too glitchy to check.
         // Yes, they have caused an insane amount of uncertainty!
