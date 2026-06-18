@@ -39,7 +39,7 @@ public class ElytraQ extends Check implements PacketCheck {
             InteractionHand hand = packet.getHand();
             ItemStack item = player.inventory.getItemInHand(hand);
 
-            if (item.getType().equals(ItemTypes.FIREWORK_ROCKET)) {
+            if (player.isGliding && item.getType().equals(ItemTypes.FIREWORK_ROCKET)) {
                 if (!interactThisTick && player.objectMouseOver != null && player.objectMouseOver.getType() != null && player.objectMouseOver.getType().equals(RayTraceResult.Type.BLOCK)) {
                     WrappedBlockState block = player.objectMouseOver.getState();
                     if (shouldModifyPackets()) {
