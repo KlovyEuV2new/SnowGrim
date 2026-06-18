@@ -885,7 +885,10 @@ public class GrimPlayer implements GrimUser {
     public void stopGliding() {
         isFallFlying = false;
         flags &= (byte) ~0x80;
+        updateEntityFlags();
+    }
 
+    private void updateEntityFlags() {
         WrapperPlayServerEntityMetadata metadata =
                 new WrapperPlayServerEntityMetadata(
                         entityID,
@@ -897,7 +900,6 @@ public class GrimPlayer implements GrimUser {
                                 )
                         )
                 );
-
         user.sendPacket(metadata);
     }
 

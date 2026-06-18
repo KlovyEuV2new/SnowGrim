@@ -17,7 +17,7 @@ public class ElytraO extends Check implements PostPredictionCheck {
     }
 
     public void onPredictionComplete(final PredictionComplete predictionComplete) {
-        if (!player.isGliding) {
+        if (!player.isGliding || player.wasTouchingWater) {
             tick = 0;
             return;
         }
