@@ -45,6 +45,7 @@ import ac.grim.grimac.utils.nmsutil.Materials;
 import ac.grim.grimac.utils.raytrace.RayTraceData;
 import ac.grim.grimac.utils.raytrace.RayTraceResult;
 import ac.grim.grimac.utils.raytrace.RayTraceUtil;
+import ac.grim.grimac.utils.raytrace.StateBoxes;
 import ac.grim.grimac.utils.viaversion.ViaVersionUtil;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
@@ -933,7 +934,7 @@ public class GrimPlayer implements GrimUser {
     private RayTraceResult rayTraceBlock(RayTraceData context, Vector3i blockPos, boolean includeNonSolid) {
         WrappedBlockState block = compensatedWorld.getBlock(blockPos);
 
-        if (block.getType().isAir() || (!includeNonSolid && !block.getType().isSolid())) {
+        if (block.getType().isAir() || (!includeNonSolid && (!block.getType().isSolid() || !StateBoxes.isFullCube(block.getType())))) {
             return null;
         }
 
