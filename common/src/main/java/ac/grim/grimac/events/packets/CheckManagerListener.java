@@ -792,6 +792,7 @@ public class CheckManagerListener extends PacketListenerAbstract {
                 player.getSetbackTeleportUtil().onPredictionComplete(new PredictionComplete(0, update, true));
             }
         }
+        if (hasLook || hasPosition) player.objectMouseOver = player.pick(player.getBlockReachDistance(), player.getRenderPartialTicks(), false);
 
         player.packetStateData.didLastLastMovementIncludePosition = player.packetStateData.didLastMovementIncludePosition;
         player.packetStateData.didLastMovementIncludePosition = hasPosition;

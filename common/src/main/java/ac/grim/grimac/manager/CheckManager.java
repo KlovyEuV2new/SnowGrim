@@ -35,6 +35,7 @@ import ac.grim.grimac.checks.impl.exploit.ExploitA;
 import ac.grim.grimac.checks.impl.exploit.ExploitB;
 import ac.grim.grimac.checks.impl.exploit.ExploitC;
 import ac.grim.grimac.checks.impl.exploit.ExploitD;
+import ac.grim.grimac.checks.impl.exploit.ef.PacketLimiter;
 import ac.grim.grimac.checks.impl.flight.FlightB;
 import ac.grim.grimac.checks.impl.movement.*;
 import ac.grim.grimac.checks.impl.groundspoof.NoFall;
@@ -144,7 +145,7 @@ public class CheckManager {
                 //.put(BadPacketsZ.class, new BadPacketsZ(player))
                 .put(BadPacketsAB.class, new BadPacketsAB(player))
                 .put(BadPacketsAC.class, new BadPacketsAC(player))
-                .put(ac.grim.grimac.checks.impl.exploit.ef.PacketLimiter.class, new ac.grim.grimac.checks.impl.exploit.ef.PacketLimiter(player))
+                .put(PacketLimiter.class, new PacketLimiter(player))
                 .put(InventoryA.class, new InventoryA(player))
                 .put(InventoryB.class, new InventoryB(player))
                 .put(InventoryE.class, new InventoryE(player))
@@ -182,6 +183,8 @@ public class CheckManager {
                 .put(FlightB.class, new FlightB(player))
                 //.put(ElytraJ.class, new ElytraJ(player))
                 .put(ElytraP.class,new ElytraP(player))
+                .put(ElytraQ.class, new ElytraQ(player))
+                .put(NoInteract.class, new NoInteract(player))
                 .put(NpcAura.class, new NpcAura(player))
                 .put(NpcPacketListener.class, new NpcPacketListener(player))
                 .put(SetBackTimeListener.class, new SetBackTimeListener(player)) // Must be last class otherwise we can't check while blocking packets

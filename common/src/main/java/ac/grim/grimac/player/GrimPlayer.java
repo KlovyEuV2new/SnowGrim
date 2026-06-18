@@ -36,15 +36,15 @@ import ac.grim.grimac.utils.enums.FluidTag;
 import ac.grim.grimac.utils.enums.Pose;
 import ac.grim.grimac.utils.inventory.InventoryDesyncStatus;
 import ac.grim.grimac.utils.latency.*;
-import ac.grim.grimac.utils.math.GrimMath;
-import ac.grim.grimac.utils.math.Location;
-import ac.grim.grimac.utils.math.TrigHandler;
-import ac.grim.grimac.utils.math.Vector3dm;
+import ac.grim.grimac.utils.math.*;
 import ac.grim.grimac.utils.nmsutil.BlockProperties;
 import ac.grim.grimac.utils.nmsutil.Collisions;
 import ac.grim.grimac.utils.nmsutil.GetBoundingBox;
 import ac.grim.grimac.utils.nmsutil.ReachUtils;
 import ac.grim.grimac.utils.nmsutil.Materials;
+import ac.grim.grimac.utils.raytrace.RayTraceData;
+import ac.grim.grimac.utils.raytrace.RayTraceResult;
+import ac.grim.grimac.utils.raytrace.RayTraceUtil;
 import ac.grim.grimac.utils.viaversion.ViaVersionUtil;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
@@ -65,7 +65,6 @@ import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.dimension.DimensionType;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.defaulttags.BlockTags;
-import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
@@ -304,6 +303,7 @@ public class GrimPlayer implements GrimUser {
     public List<WrapperPlayServerUpdateAttributes.Property> lastAttributes;
 
     public final RotData rotationData;
+    public RayTraceResult objectMouseOver = null;
 
     public CompensatedInventory getInventory() {
         return inventory;
@@ -373,17 +373,10 @@ public class GrimPlayer implements GrimUser {
 //            for (String string : list) sendMessage(string);
 //        });
     }
-    public boolean isInWeb() {
-        SimpleCollisionBox box = this.boundingBox.copy().expand(-1.0E-4);
 
-        return Collisions.hasMaterial(this, box, pair -> {
-            var block = compensatedWorld.getBlock(pair.second().toVector3i());
-            if (block == null) return false;
-            return block.getType() == StateTypes.COBWEB;
-        });
+    public float getRenderPartialTicks() {
+        return 1.0F;
     }
-
-
 
     public double deltaXZ() {
         return GrimMath.distanceXZ(lastX,x,lastZ,z);
@@ -880,6 +873,85 @@ public class GrimPlayer implements GrimUser {
 
     public boolean inVehicle() {
         return compensatedEntities.self.inVehicle();
+    }
+
+    public final Vector3d getEyePosition(float partialTicks) {
+        if (partialTicks == 1.0F) {
+            return new Vector3d(this.x, this.getPosYEye(), this.z);
+        } else {
+            double d0 = McMath.lerp((double) partialTicks, this.lastX, this.x);
+            double d1 = McMath.lerp((double) partialTicks, this.lastY, this.y) + (double) this.getEyeHeight();
+            double d2 = McMath.lerp((double) partialTicks, this.lastZ, this.z);
+            return new Vector3d(d0, d1, d2);
+        }
+    }
+
+    public float getBlockReachDistance() {
+        return gamemode.equals(GameMode.CREATIVE) ? 5.0F : 4.5F;
+    }
+
+    public double getPosYEye() {
+        return this.y + (double) this.getEyeHeight();
+    }
+
+    public final Vector3d getLook(float partialTicks) {
+        return this.getVectorForRotation(this.getPitch(partialTicks), this.getYaw(partialTicks));
+    }
+
+    public float getPitch(float partialTicks) {
+        return partialTicks == 1.0F ? this.pitch : McMath.lerp(partialTicks, this.lastPitch, this.pitch);
+    }
+
+    public float getYaw(float partialTicks) {
+        return partialTicks == 1.0F ? this.yaw : McMath.lerp(partialTicks, this.lastYaw, this.yaw);
+    }
+
+    protected final Vector3d getVectorForRotation(float pitch, float yaw) {
+        float f = pitch * ((float) Math.PI / 180F);
+        float f1 = -yaw * ((float) Math.PI / 180F);
+        float f2 = McMath.cos(f1);
+        float f3 = McMath.sin(f1);
+        float f4 = McMath.cos(f);
+        float f5 = McMath.sin(f);
+        return new Vector3d((double) (f3 * f4), (double) (-f5), (double) (f2 * f4));
+    }
+
+    public RayTraceResult pick(double rayTraceDistance, float partialTicks, boolean includeFluid) {
+        Vector3d eyePos = this.getEyePosition(partialTicks);
+        Vector3d look = this.getLook(partialTicks);
+        Vector3d end = eyePos.add(look.x * rayTraceDistance, look.y * rayTraceDistance, look.z * rayTraceDistance);
+
+        RayTraceResult result = RayTraceUtil.doRayTrace(
+                new RayTraceData(eyePos, end),
+                (ctx, pos) -> rayTraceBlock(ctx, pos, includeFluid),
+                this::missHandler
+        );
+
+        return result;
+    }
+
+    private RayTraceResult rayTraceBlock(RayTraceData context, Vector3i blockPos, boolean includeNonSolid) {
+        WrappedBlockState block = compensatedWorld.getBlock(blockPos);
+
+        if (block.getType().isAir() || (!includeNonSolid && !block.getType().isSolid())) {
+            return null;
+        }
+
+        return new RayTraceResult(new Vector3d(blockPos.x, blockPos.y, blockPos.z), block) {
+            @Override
+            public Type getType() {
+                return Type.BLOCK;
+            }
+        };
+    }
+
+    private RayTraceResult missHandler(RayTraceData context) {
+        return new RayTraceResult(null, null) {
+            @Override
+            public Type getType() {
+                return null;
+            }
+        };
     }
 
     public void stopGliding() {

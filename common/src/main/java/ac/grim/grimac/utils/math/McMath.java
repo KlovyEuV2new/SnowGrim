@@ -27,6 +27,45 @@ public class McMath {
         return object;
     }
 
+    public static float lerp(float pct, float start, float end) {
+        return start + pct * (end - start);
+    }
+
+    public static double lerp(double pct, double start, double end) {
+        return start + pct * (end - start);
+    }
+
+    public static int floor(float value) {
+        int i = (int) value;
+        return value < (float) i ? i - 1 : i;
+    }
+
+    public static int floor(double value) {
+        int i = (int) value;
+        return value < (double) i ? i - 1 : i;
+    }
+
+    public static int signum(double x) {
+        if (x == 0.0D) {
+            return 0;
+        } else {
+            return x > 0.0D ? 1 : -1;
+        }
+    }
+
+    public static float frac(float number) {
+        return number - (float) floor(number);
+    }
+
+    public static long lfloor(double value) {
+        long i = (long) value;
+        return value < (double) i ? i - 1L : i;
+    }
+
+    public static double frac(double number) {
+        return number - (double) lfloor(number);
+    }
+
     public static float roundToFloat(double d)
     {
         return (float)((double)Math.round(d * 1.0E8D) / 1.0E8D);
