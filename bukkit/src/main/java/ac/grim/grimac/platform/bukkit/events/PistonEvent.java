@@ -6,18 +6,22 @@ import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.collisions.datatypes.SimpleCollisionBox;
 import ac.grim.grimac.utils.data.PistonTemplate;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
+import com.github.retrooper.packetevents.util.Vector3d;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class PistonEvent implements Listener {
 
@@ -78,6 +82,27 @@ public class PistonEvent implements Listener {
         GrimPlayer grimPlayer = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(player.getUniqueId());
         if (grimPlayer != null) {
             grimPlayer.bukkiFlySpeed = player.getFlySpeed();
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFish(PlayerFishEvent event) {
+        Player bukkitPlayer = event.getPlayer();
+        Entity caught = event.getCaught();
+        if (caught == null) return;
+        UUID uuid = caught.getUniqueId();
+
+        GrimPlayer hooked = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(bukkitPlayer.getUniqueId());
+        if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY) {
+            if (caught instanceof Player) {
+                GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(uuid);
+                if (player != null) {
+                    player.hooking = true;
+                    player.hookedBy = hooked;
+                    player.hookVec = new Vector3d(bukkitPlayer.getLocation().getX(), bukkitPlayer.getLocation().getY(), bukkitPlayer.getLocation().getY());
+                    player.hookTick();
+                }
+            }
         }
     }
 

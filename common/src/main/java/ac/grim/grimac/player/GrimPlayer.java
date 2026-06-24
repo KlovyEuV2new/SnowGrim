@@ -296,6 +296,13 @@ public class GrimPlayer implements GrimUser {
     public boolean lastJumping;
 
     public List<EntityData<?>> lastMetadata;
+    public boolean isDigging;
+    public long digTick;
+
+    public boolean hooking;
+    public GrimPlayer hookedBy;
+    public Vector3d hookVec;
+    public long hookTick;
 
     @Getter
     @Setter
@@ -304,7 +311,7 @@ public class GrimPlayer implements GrimUser {
     public List<WrapperPlayServerUpdateAttributes.Property> lastAttributes;
 
     public final RotData rotationData;
-    public RayTraceResult objectMouseOver = null;
+    public RayTraceResult objectMouseOver = null, lastObjectMouseOver = null;
 
     public CompensatedInventory getInventory() {
         return inventory;
@@ -435,6 +442,36 @@ public class GrimPlayer implements GrimUser {
         set.addAll(getPossibleVelocitiesMinusKnockback());
         set.addAll(getPossibleVelocitiesMinusKnockback());
         return set;
+    }
+
+    public double getResistance() {
+        double res = 0;
+        if (getInventory().getHelmet().getType().equals(ItemTypes.NETHERITE_HELMET))
+            res += 1;
+        if (getInventory().getChestplate().getType().equals(ItemTypes.NETHERITE_CHESTPLATE))
+            res += 1;
+        if (getInventory().getLeggings().getType().equals(ItemTypes.NETHERITE_LEGGINGS))
+            res += 1;
+        if (getInventory().getBoots().getType().equals(ItemTypes.NETHERITE_BOOTS))
+            res += 1;
+        return res;
+    }
+
+    public Vector3i getBlockPos() {
+        return new Vector3i(
+                (int) Math.floor(x),
+                (int) Math.floor(y),
+                (int) Math.floor(z)
+        );
+    }
+
+    public WrappedBlockState getBlock() {
+        Vector3i blockpos = new Vector3i(
+                (int) Math.floor(x),
+                (int) Math.floor(y),
+                (int) Math.floor(z)
+        );
+        return compensatedWorld.getBlock(blockpos);
     }
 
     public boolean isOnLadder() {
@@ -744,6 +781,20 @@ public class GrimPlayer implements GrimUser {
 
     public void timedOut() {
         disconnect(MessageUtil.miniMessage(MessageUtil.replacePlaceholders(this, GrimAPI.INSTANCE.getConfigManager().getDisconnectTimeout())));
+    }
+
+    public boolean inBlockEndCollision() {
+        return (float) Math.abs(x - (int) x) == 0.7F || (float) Math.abs(x - (int) x) == 0.3F
+                || (float) Math.abs(z - (int) z) == 0.7F || (float) Math.abs(z - (int) z) == 0.3F;
+    }
+
+    public void hookTick() {
+        hookTick = GrimAPI.INSTANCE.getTickManager().currentTick;
+    }
+
+    public boolean inBlock() {
+        WrappedBlockState block = getBlock();
+        return block.getType().isSolid();
     }
 
     public void disconnect(Component reason) {
@@ -1313,11 +1364,11 @@ public class GrimPlayer implements GrimUser {
                 GrimMath.ceil(box.maxX), GrimMath.ceil(box.maxY), GrimMath.ceil(box.maxZ));
     }
 
-    public void addMovementThisTick(GrimPlayer.Movement movement) {
+    public void addMovementThisTick(Movement movement) {
         if (this.movementThisTick.size() >= 100) {
-            GrimPlayer.Movement movement1 = this.movementThisTick.removeFirst();
-            GrimPlayer.Movement movement2 = this.movementThisTick.removeFirst();
-            GrimPlayer.Movement movement3 = new GrimPlayer.Movement(movement1.from(), movement2.to());
+            Movement movement1 = this.movementThisTick.removeFirst();
+            Movement movement2 = this.movementThisTick.removeFirst();
+            Movement movement3 = new Movement(movement1.from(), movement2.to());
             this.movementThisTick.addFirst(movement3);
         }
 

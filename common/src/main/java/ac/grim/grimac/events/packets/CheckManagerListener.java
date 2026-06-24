@@ -593,6 +593,7 @@ public class CheckManagerListener extends PacketListenerAbstract {
         // Call the packet checks last as they can modify the contents of the packet
         // Such as the NoFall check setting the player to not be on the ground
         player.checkManager.onPacketReceive(event);
+        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) player.hooking = false;
 
         if (player.packetStateData.cancelDuplicatePacket) {
             event.setCancelled(true);
@@ -792,7 +793,10 @@ public class CheckManagerListener extends PacketListenerAbstract {
                 player.getSetbackTeleportUtil().onPredictionComplete(new PredictionComplete(0, update, true));
             }
         }
-        if (hasLook || hasPosition) player.objectMouseOver = player.pick(player.getBlockReachDistance(), player.getRenderPartialTicks(), false);
+        if (hasLook || hasPosition) {
+            player.lastObjectMouseOver = player.objectMouseOver;
+            player.objectMouseOver = player.pick(player.getBlockReachDistance(), player.getRenderPartialTicks(), false);
+        }
 
         player.packetStateData.didLastLastMovementIncludePosition = player.packetStateData.didLastMovementIncludePosition;
         player.packetStateData.didLastMovementIncludePosition = hasPosition;
@@ -815,6 +819,9 @@ public class CheckManagerListener extends PacketListenerAbstract {
                 && action != DiggingAction.CANCELLED_DIGGING) {
             return;
         }
+        player.isDigging = action == DiggingAction.START_DIGGING;
+        if (player.isDigging) player.digTick = 0;
+        else player.digTick++;
 
         final BlockBreak blockBreak = new BlockBreak(player, packet.getBlockPosition(), packet.getBlockFace(), packet.getBlockFaceId(), action, packet.getSequence(), player.compensatedWorld.getBlock(packet.getBlockPosition()));
 

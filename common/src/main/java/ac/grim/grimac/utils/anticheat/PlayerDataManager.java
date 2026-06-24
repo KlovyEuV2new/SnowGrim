@@ -35,6 +35,16 @@ public class PlayerDataManager {
         return player;
     }
 
+    @Nullable
+    public GrimPlayer getPlayer(final @NotNull int id) {
+        @Nullable GrimPlayer player = null;
+        for (GrimPlayer p : playerDataMap.values()) if (p.entityID == id) player = p;
+        if (player != null && player.platformPlayer != null && player.platformPlayer.isExternalPlayer())
+            return null;
+        return player;
+    }
+
+
     public boolean shouldCheck(@NotNull User user) {
         if (exemptUsers.contains(user)) return false;
         if (!ChannelHelper.isOpen(user.getChannel())) return false;

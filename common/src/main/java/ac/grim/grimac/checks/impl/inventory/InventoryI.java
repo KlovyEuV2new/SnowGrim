@@ -36,7 +36,6 @@ public class InventoryI extends InventoryCheck {
             )
     );
 
-    // Поля для хранения значений из конфигурации (конвертированных в наносекунды)
     private boolean enabled = true;
     private long clickThresholdNs = 15_000_000L;
     private long minDiffPacketsNs = 5_000_000_000L;
