@@ -11,6 +11,8 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 
 @CheckData(name = "Timer", configName = "TimerA", setback = 10)
 public class Timer extends Check implements PacketCheck {
+    public boolean alternativeFix;
+
     protected long timerBalanceRealTime = 0;
 
     // Default value is real time minus max keep-alive time
@@ -85,7 +87,7 @@ public class Timer extends Check implements PacketCheck {
             }
 
             // Reset the violation by 1 movement
-            timerBalanceRealTime -= 50e6;
+            if(!alternativeFix) timerBalanceRealTime -= 50e6;
         }
 
         limitFallBehind();
@@ -108,5 +110,6 @@ public class Timer extends Check implements PacketCheck {
     @Override
     public void onReload(ConfigManager config) {
         clockDrift = (long) (config.getDoubleElse(getConfigName() + ".drift", 120.0) * 1e6);
+        alternativeFix = config.getBooleanElse(getConfigName() + ".mitigateTicks", false);
     }
 }

@@ -14,6 +14,8 @@ import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 
 @CheckData(name = "TickBase", configName = "TimerC")
 public class TickBase extends Check implements PacketCheck {
+    public boolean alternativeFix;
+
     long timerBalanceRealTime = 0;
 
     // Default value is real time minus max keep-alive time
@@ -87,12 +89,12 @@ public class TickBase extends Check implements PacketCheck {
 
                 if (shouldSetback()) {
                     player.getSetbackTeleportUtil().executeViolationSetbackDown();
-                  //  player.getSetbackTeleportUtil().executeNonSimulatingSetback();
+                    //  player.getSetbackTeleportUtil().executeNonSimulatingSetback();
                 }
             }
 
             // Reset the violation by 1 movement
-            timerBalanceRealTime -= 50e6;
+            if(!alternativeFix) timerBalanceRealTime -= 50e6;
         }
 
         limitFallBehind();
@@ -116,6 +118,7 @@ public class TickBase extends Check implements PacketCheck {
     public void onReload(ConfigManager config) {
         clockDrift = (long) (config.getDoubleElse(getConfigName() + ".drift", 120.0) * 1e6);
         minmbalance = config.getIntElse(getConfigName() + ".minmbalance", -4005);
+        alternativeFix = config.getBooleanElse(getConfigName() + ".mitigateTicks", false);
 
     }
 }

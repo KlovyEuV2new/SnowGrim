@@ -19,6 +19,7 @@ import ac.grim.grimac.utils.anticheat.update.PositionUpdate;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 import ac.grim.grimac.utils.collisions.datatypes.SimpleCollisionBox;
 import ac.grim.grimac.utils.data.VectorData;
+import ac.grim.grimac.utils.data.attribute.ValuedAttribute;
 import ac.grim.grimac.utils.data.packetentity.PacketEntity;
 import ac.grim.grimac.utils.data.packetentity.PacketEntityCamel;
 import ac.grim.grimac.utils.data.packetentity.PacketEntityHappyGhast;
@@ -45,6 +46,9 @@ import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.defaulttags.BlockTags;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
+
+import java.util.Optional;
+import java.util.Set;
 
 public class MovementCheckRunner extends Check implements PositionCheck {
     // Averaged over 500 predictions (Defaults set slightly above my 3600x results)
@@ -127,6 +131,27 @@ public class MovementCheckRunner extends Check implements PositionCheck {
         player.uncertaintyHandler.lastHorizontalOffset = 0;
         player.uncertaintyHandler.lastVerticalOffset = 0;
     }
+
+    private static final Set<Double> LERP_COLLISION_Y_VALUES = Set.of(
+            0.5,
+            0.375,
+            0.5625,
+            0.5380759117863079,
+            0.5381386904371084,
+            0.5266593749554431,
+            0.4641593749554431,
+            0.5195781594607922,
+            0.44120315946079813
+    );
+
+    private static final Set<Double> LERP_COLLISION_SMALL_POSITIVE_Y_VALUES = Set.of(
+            0.5,
+            0.375,
+            0.05000000074505806,
+            0.03160002231598469,
+            0.031600007414823494,
+            0.0315999925136623
+    );
 
     private void check(PositionUpdate update) {
         if (update.isTeleport()) {
@@ -524,6 +549,30 @@ public class MovementCheckRunner extends Check implements PositionCheck {
         } // If it isn't any of these cases, the player is on a mob they can't control and therefore is exempt
 
         // No, don't comment about the sqrt call.  It doesn't matter unless you run sqrt thousands of times a second.
+
+        Optional<ValuedAttribute> attImpl = player.compensatedEntities.self.getAttribute(Attributes.JUMP_STRENGTH);
+        double att = attImpl.map(ValuedAttribute::get).orElse(0.41999998688697815);
+        boolean lerped;
+
+        Vector3dm doLerp = player.predictedVelocity.vector.clone();
+        if (!player.isGliding && !player.isFlying && !player.inVehicle()) {
+            if (player.uncertaintyHandler.lastHardCollidingLerpingEntity.hasOccurredSince(3)) {
+                double deltaY = player.deltaY();
+
+                if (LERP_COLLISION_Y_VALUES.contains(deltaY)) {
+                    player.predictedVelocity.vector.setY(deltaY);
+                } else if (deltaY > 0 && LERP_COLLISION_SMALL_POSITIVE_Y_VALUES.contains(deltaY)) {
+                    player.predictedVelocity.vector.setY(deltaY);
+                }
+            }
+        }
+        if (!doLerp.equals(player.predictedVelocity.vector)) lerped = true;
+        else if ((player.uncertaintyHandler.lastHardCollidingLerpingEntity.hasOccurredSince(3)) && ((!player.onGround && player.deltaY() > 0)
+                || (player.deltaY() > 0 && player.lastDeltaY < 0))
+//                && player.lastDeltaY != -0.07837499999999409 && player.lastDeltaY != -0.30431682745754074 // block fall collision fp
+                && !(player.deltaY() == 0.4375 && player.lastDeltaY == 0.5625)) // boat jump fp
+            player.predictedVelocity.vector.setY(Math.min(player.deltaY(), att));
+
         double offset = player.predictedVelocity.vector.distance(player.actualMovement);
         offset = player.uncertaintyHandler.reduceOffset(offset);
 

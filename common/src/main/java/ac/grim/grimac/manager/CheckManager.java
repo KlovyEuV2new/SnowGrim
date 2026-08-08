@@ -8,26 +8,14 @@ import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.checks.debug.HitboxDebugHandler;
 import ac.grim.grimac.checks.impl.aim.*;
 import ac.grim.grimac.checks.impl.aim.aimassist.*;
-import ac.grim.grimac.checks.impl.aim.heuristic.AimHeuristicA;
-import ac.grim.grimac.checks.impl.aim.heuristic.AimHeuristicB;
-import ac.grim.grimac.checks.impl.aim.heuristic.AimHeuristicC;
-import ac.grim.grimac.checks.impl.aim.snap.AimSnapA;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.aim.snap.AimSnapLook;
 import ac.grim.grimac.checks.impl.aim.states.*;
-import ac.grim.grimac.checks.impl.airstuck.AirStuckA;
-import ac.grim.grimac.checks.impl.aura.AuraA;
-import ac.grim.grimac.checks.impl.aura.AuraB;
-import ac.grim.grimac.checks.impl.aura.AuraD;
-import ac.grim.grimac.checks.impl.autoclicker.AutoClickerA;
-import ac.grim.grimac.checks.impl.autoclicker.AutoclickerB;
 import ac.grim.grimac.checks.impl.badpackets.*;
 import ac.grim.grimac.checks.impl.breaking.*;
 import ac.grim.grimac.checks.impl.chat.ChatA;
 import ac.grim.grimac.checks.impl.chat.ChatB;
 import ac.grim.grimac.checks.impl.chat.ChatC;
-import ac.grim.grimac.checks.impl.chat.ChatD;
-import ac.grim.grimac.checks.impl.client.ClientA;
 import ac.grim.grimac.checks.impl.combat.*;
 import ac.grim.grimac.checks.impl.crash.*;
 import ac.grim.grimac.checks.impl.elytra.*;
@@ -35,7 +23,6 @@ import ac.grim.grimac.checks.impl.exploit.ExploitA;
 import ac.grim.grimac.checks.impl.exploit.ExploitB;
 import ac.grim.grimac.checks.impl.exploit.ExploitC;
 import ac.grim.grimac.checks.impl.exploit.ExploitD;
-import ac.grim.grimac.checks.impl.exploit.ef.PacketLimiter;
 import ac.grim.grimac.checks.impl.flight.FlightB;
 import ac.grim.grimac.checks.impl.movement.*;
 import ac.grim.grimac.checks.impl.groundspoof.NoFall;
@@ -94,12 +81,12 @@ public class CheckManager {
     public CheckManager(GrimPlayer player) {
         this.player = player;
         doPacketChecks = new ImmutableClassToInstanceMap.Builder<DoPacketCheck>()
-                .put(BadPacketsAA.class, new BadPacketsAA(player))
+                //.put(BadPacketsAA.class, new BadPacketsAA(player))
                 .build();
         packetChecks = new ImmutableClassToInstanceMap.Builder<PacketCheck>()
                 .put(PacketOrderProcessor.class, player.packetOrderProcessor)
                 .put(Reach.class, new Reach(player))
-                .put(WebOffset.class, new WebOffset(player))
+                //.put(WebOffset.class, new WebOffset(player))
                 .put(PacketEntityReplication.class, new PacketEntityReplication(player))
                 .put(PacketChangeGameState.class, new PacketChangeGameState(player))
                 .put(CompensatedInventory.class, player.inventory)
@@ -112,16 +99,16 @@ public class CheckManager {
                 .put(ChatA.class, new ChatA(player))
                 .put(ChatB.class, new ChatB(player))
                 .put(ChatC.class, new ChatC(player))
-                .put(ChatD.class, new ChatD(player))
-                .put(AuraA.class, new AuraA(player))
-                .put(AuraB.class, new AuraB(player))
-                .put(AuraD.class, new AuraD(player))
+                //.put(ChatD.class, new ChatD(player))
+                //.put(AuraA.class, new AuraA(player))
+                //.put(AuraB.class, new AuraB(player))
+                //.put(AuraD.class, new AuraD(player))
                 .put(ExploitA.class, new ExploitA(player))
                 .put(ExploitB.class, new ExploitB(player))
                 .put(ExploitC.class, new ExploitC(player))
                 .put(ExploitD.class, new ExploitD(player))
-                .put(AirStuckA.class, new AirStuckA(player))
-                .put(BadPacketsA.class, new BadPacketsA(player))
+                //.put(AirStuckA.class, new AirStuckA(player))
+                //.put(BadPacketsA.class, new BadPacketsA(player))
                 .put(BadPacketsB.class, new BadPacketsB(player))
                 .put(BadPacketsC.class, new BadPacketsC(player))
                 .put(BadPacketsD.class, new BadPacketsD(player))
@@ -143,17 +130,17 @@ public class CheckManager {
                 .put(BadPacketsV.class, new BadPacketsV(player))
                 .put(BadPacketsY.class, new BadPacketsY(player))
                 //.put(BadPacketsZ.class, new BadPacketsZ(player))
-                .put(BadPacketsAB.class, new BadPacketsAB(player))
-                .put(BadPacketsAC.class, new BadPacketsAC(player))
-                .put(PacketLimiter.class, new PacketLimiter(player))
+                //.put(BadPacketsAB.class, new BadPacketsAB(player))
+                //.put(BadPacketsAC.class, new BadPacketsAC(player))
+                //.put(PacketLimiter.class, new PacketLimiter(player))
                 .put(InventoryA.class, new InventoryA(player))
                 .put(InventoryB.class, new InventoryB(player))
                 .put(InventoryE.class, new InventoryE(player))
                 .put(InventoryF.class, new InventoryF(player))
-                .put(InventoryH.class, new InventoryH(player))
+                //.put(InventoryH.class, new InventoryH(player))
                 .put(InventoryG.class, new InventoryG(player))
-                .put(InventoryI.class, new InventoryI(player))
-                .put(InventoryX.class, new InventoryX(player))
+                //.put(InventoryI.class, new InventoryI(player))
+                //.put(InventoryX.class, new InventoryX(player))
                 .put(MultiActionsA.class, new MultiActionsA(player))
                 .put(MultiActionsC.class, new MultiActionsC(player))
                 .put(MultiActionsD.class, new MultiActionsD(player))
@@ -170,25 +157,31 @@ public class CheckManager {
                 .put(VehicleD.class, new VehicleD(player))
                 .put(VehicleE.class, new VehicleE(player))
                 .put(VehicleF.class, new VehicleF(player))
-                .put(ClientA.class,new ClientA(player))
+                //.put(ClientA.class,new ClientA(player))
                 .put(CrashB.class, new CrashB(player))
                 .put(CrashD.class, new CrashD(player))
                 .put(CrashE.class, new CrashE(player))
                 .put(CrashF.class, new CrashF(player))
                 .put(CrashH.class, new CrashH(player))
                 .put(CrashI.class, new CrashI(player))
-                .put(AutoClickerA.class,new AutoClickerA(player))
-                .put(AutoclickerB.class,new AutoclickerB(player))
-                .put(AimE.class, new AimE(player))
+                //.put(AutoClickerA.class,new AutoClickerA(player))
+                //.put(AutoclickerB.class,new AutoclickerB(player))
+                //.put(AimE.class, new AimE(player))
                 .put(FlightB.class, new FlightB(player))
                 //.put(ElytraJ.class, new ElytraJ(player))
                 .put(ElytraP.class,new ElytraP(player))
-                .put(ElytraQ.class, new ElytraQ(player))
-                .put(NoInteract.class, new NoInteract(player))
+                //.put(ElytraQ.class, new ElytraQ(player))
+                //.put(NoInteract.class, new NoInteract(player))
+                //.put(NoPushA.class, new NoPushA(player))
+                //.put(InventoryY.class, new InventoryY(player))
                 .put(NpcAura.class, new NpcAura(player))
                 .put(NpcPacketListener.class, new NpcPacketListener(player))
                 .put(SetBackTimeListener.class, new SetBackTimeListener(player)) // Must be last class otherwise we can't check while blocking packets
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
+
+                //.put(UtilA.class, new UtilA(player))
+                //.put(Esp.class, new Esp(player))
+
                 .build();
 
         positionChecks = new ImmutableClassToInstanceMap.Builder<PositionCheck>()
@@ -199,38 +192,38 @@ public class CheckManager {
                 .put(AimProcessor.class, new AimProcessor(player))
                 .put(AimModulo360.class, new AimModulo360(player))
                 .put(AimSnapLook.class,new AimSnapLook(player))
-                .put(AimG.class,new AimG(player))
-                .put(AimA.class,new AimA(player))
+                //.put(AimG.class,new AimG(player))
+                //.put(AimA.class,new AimA(player))
                 .put(AimB.class,new AimB(player))
-                .put(AimC.class,new AimC(player))
-                .put(AimD.class,new AimD(player))
-                .put(AimJ.class,new AimJ(player))
-                .put(AimL.class,new AimL(player))
-                .put(AimK.class,new AimK(player))
-                .put(AimU.class,new AimU(player))
-                .put(AimV.class,new AimV(player))
-                .put(AimW.class,new AimW(player))
-                .put(AimS.class,new AimS(player))
-                .put(AimX.class,new AimX(player))
-                .put(AimY.class,new AimY(player))
-                .put(AimStaticA.class,new AimStaticA(player))
-                .put(AimStaticB.class,new AimStaticB(player))
-                .put(AimStaticC.class,new AimStaticC(player))
-                .put(AimStaticD.class,new AimStaticD(player))
-                .put(AimRepeatA.class,new AimRepeatA(player))
-                .put(AimRepeatB.class,new AimRepeatB(player))
-                .put(AimHeuristicA.class,new AimHeuristicA(player))
-                .put(AimHeuristicB.class,new AimHeuristicB(player))
-                .put(AimHeuristicC.class,new AimHeuristicC(player))
-                .put(AimAssistA.class,new AimAssistA(player))
-                .put(AimAssistB.class,new AimAssistB(player))
-                .put(AimAssistC.class,new AimAssistC(player))
-                .put(AimAssistD.class,new AimAssistD(player))
-                .put(AimAssistE.class,new AimAssistE(player))
-                .put(AimAssistR.class,new AimAssistR(player))
-                .put(AimAssistL.class,new AimAssistL(player))
-                .put(AimAssistT.class,new AimAssistT(player))
-                .put(AimSnapA.class, new AimSnapA(player))
+                //.put(AimC.class,new AimC(player))
+                //.put(AimD.class,new AimD(player))
+                //.put(AimJ.class,new AimJ(player))
+                //.put(AimL.class,new AimL(player))
+                //.put(AimK.class,new AimK(player))
+                //.put(AimU.class,new AimU(player))
+                //.put(AimV.class,new AimV(player))
+                //.put(AimW.class,new AimW(player))
+                //.put(AimS.class,new AimS(player))
+                //.put(AimX.class,new AimX(player))
+                //.put(AimY.class,new AimY(player))
+                //.put(AimStaticA.class,new AimStaticA(player))
+                //.put(AimStaticB.class,new AimStaticB(player))
+                //.put(AimStaticC.class,new AimStaticC(player))
+                //.put(AimStaticD.class,new AimStaticD(player))
+                //.put(AimRepeatA.class,new AimRepeatA(player))
+                //.put(AimRepeatB.class,new AimRepeatB(player))
+                //.put(AimHeuristicA.class,new AimHeuristicA(player))
+                //.put(AimHeuristicB.class,new AimHeuristicB(player))
+                //.put(AimHeuristicC.class,new AimHeuristicC(player))
+                //.put(AimAssistA.class,new AimAssistA(player))
+                //.put(AimAssistB.class,new AimAssistB(player))
+                //.put(AimAssistC.class,new AimAssistC(player))
+                //.put(AimAssistD.class,new AimAssistD(player))
+                //.put(AimAssistE.class,new AimAssistE(player))
+                //.put(AimAssistR.class,new AimAssistR(player))
+                //.put(AimAssistL.class,new AimAssistL(player))
+                //.put(AimAssistT.class,new AimAssistT(player))
+                //.put(AimSnapA.class, new AimSnapA(player))
                 .put(AimDuplicateLook.class, new AimDuplicateLook(player))
                 .build();
         vehicleChecks = new ImmutableClassToInstanceMap.Builder<VehicleCheck>()
@@ -261,21 +254,22 @@ public class CheckManager {
                 .put(DebugHandler.class, new DebugHandler(player))
                 .put(BadPacketsX.class, new BadPacketsX(player))
                 .put(NoSlow.class, new NoSlow(player))
+                .put(NoWeb.class, new NoWeb(player))
                 //.put(SimulationJump.class, new SimulationJump(player))
                 .put(ElytraOffset.class, new ElytraOffset(player))
                 //.put(ShulkerOffset.class, new ShulkerOffset(player))
                 //.put(FlyingOffset.class,new FlyingOffset(player))
-                .put(ElytraN.class,new ElytraN(player))
+                //.put(ElytraN.class,new ElytraN(player))
                 //.put(ElytraO.class,new ElytraO(player))
 //                .put(SimulationB.class, new SimulationB(player))
                 .put(SprintB.class, new SprintB(player))
                 .put(SprintC.class, new SprintC(player))
                 .put(SprintD.class, new SprintD(player))
-                .put(SprintE.class, new SprintE(player))
+                //.put(SprintE.class, new SprintE(player))
                 .put(SprintF.class, new SprintF(player))
                 .put(SprintG.class, new SprintG(player))
-                .put(MultiInteractA.class, new MultiInteractA(player))
-                .put(MultiInteractB.class, new MultiInteractB(player))
+                //.put(MultiInteractA.class, new MultiInteractA(player))
+                //.put(MultiInteractB.class, new MultiInteractB(player))
                 .put(ElytraA.class, new ElytraA(player))
                 .put(ElytraB.class, new ElytraB(player))
                 .put(ElytraC.class, new ElytraC(player))
@@ -306,6 +300,7 @@ public class CheckManager {
                 .put(FabricatedPlace.class, new FabricatedPlace(player))
                 .put(PositionPlace.class, new PositionPlace(player))
                 .put(RotationPlace.class, new RotationPlace(player))
+                //.put(ScaffoldA.class, new ScaffoldA(player))
                 .put(PacketOrderN.class, new PacketOrderN(player))
                 .put(DuplicateRotPlace.class, new DuplicateRotPlace(player))
                 .put(GhostBlockMitigation.class, new GhostBlockMitigation(player))

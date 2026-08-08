@@ -66,6 +66,7 @@ import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.dimension.DimensionType;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.defaulttags.BlockTags;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
@@ -394,7 +395,30 @@ public class GrimPlayer implements GrimUser {
         return rotationData.cinematicRotation;
     }
 
-    public final List<Double> ls = new ArrayList<>();
+    public boolean isInWeb() {
+        if (this.gamemode.equals(GameMode.SPECTATOR)) {
+            return false;
+        } else {
+            Vector3i blockpos = new Vector3i(
+                    (int) Math.floor(x),
+                    (int) Math.floor(y +1),
+                    (int) Math.floor(z)
+            );
+            WrappedBlockState block = compensatedWorld.getBlock(getBlockPos()),
+                    block2 = compensatedWorld.getBlock(blockpos);
+
+            if (block.getType().equals(StateTypes.COBWEB)
+                    || block2.getType().equals(StateTypes.COBWEB)) {
+                return true;
+            } else
+//            if (BlockTags.TRAPDOORS.contains(block.getType()) && this.canGoThroughtTrapDoorOnLadder(blockpos, blockstate)) {
+//                return true;
+//            } else
+            {
+                return false;
+            }
+        }
+    }
 
     public boolean isSprintSimulation() {
         boolean isState = IceUtil.isOnIce(this) || FluidUtil.isInFluid(this) || WebUtil.isInWeb(this);

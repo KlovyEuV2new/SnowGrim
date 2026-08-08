@@ -1,6 +1,5 @@
 package ac.grim.grimac.checks.impl.movement;
 
-import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.api.config.ConfigManager;
 import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.checks.CheckData;
@@ -29,50 +28,24 @@ public class NoSlow extends Check implements PostPredictionCheck {
         if (!predictionComplete.isChecked()) return;
 
         // If the player was using an item for certain, and their predicted velocity had a flipped item //
-        if (alternativeNoslowFix) {
-            if (player.packetStateData.isSlowedByUsingItem() && buffer++ > 1) {
-                // 1.8 users are not slowed the first tick they use an item, strangely
-                if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8) && didSlotChangeLastTick) {
-                    didSlotChangeLastTick = false;
-                    flaggedLastTick = false;
-                }
-
-                if (bestOffset > offsetToFlag) {
-                    if (flaggedLastTick) {
-                        GrimAPI.INSTANCE.getItemResetHandler().resetItemUsage(player.platformPlayer);
-                        if (buffer > 6) {
-                            flagAndAlert("buffer=" + buffer);
-                        }
-                    }
-                    flaggedLastTick = true;
-                } else {
-                    reward();
-                    flaggedLastTick = true;
-                    buffer = 0;
-                }
+        if (player.packetStateData.isSlowedByUsingItem()) {
+            // 1.8 users are not slowed the first tick they use an item, strangely
+            if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8) && didSlotChangeLastTick) {
+                didSlotChangeLastTick = false;
+                flaggedLastTick = false;
             }
-            bestOffset = 1;
-        }
-        else {
-            if (player.packetStateData.isSlowedByUsingItem()) {
-                // 1.8 users are not slowed the first tick they use an item, strangely
-                if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8) && didSlotChangeLastTick) {
-                    didSlotChangeLastTick = false;
-                    flaggedLastTick = false;
-                }
 
-                if (bestOffset > offsetToFlag) {
-                    if (flaggedLastTick) {
-                        flagAndAlertWithSetback();
-                    }
-                    flaggedLastTick = true;
-                } else {
-                    reward();
-                    flaggedLastTick = false;
+            if (bestOffset > offsetToFlag) {
+                if (flaggedLastTick) {
+                    flagAndAlertWithSetback();
                 }
+                flaggedLastTick = true;
+            } else {
+                reward();
+                flaggedLastTick = alternativeNoslowFix;
             }
-            bestOffset = 1;
         }
+        bestOffset = 1;
     }
 
     public void handlePredictionAnalysis(double offset) {

@@ -28,7 +28,7 @@ public class TimerLimit extends Timer {
             }
 
             // Reset the violation by 1 movement
-            timerBalanceRealTime -= 50e6;
+            if(!alternativeFix) timerBalanceRealTime -= 50e6;
         }
 
         limitFallBehind();
